@@ -84,10 +84,32 @@
   
     -->
   {% block content %}
-  <h1 style="padding-top: 10%;"> Scatterplots </h1>
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width">
+        <meta charset="utf-8">
+        <link href="http://cdn.pydata.org/bokeh/release/bokeh-2.0.2.min.css" rel='stylesheet' type="text/css">
+        <link href="http://cdn.pydata.org/bokeh/release/bokeh-widgets-2.0.2.min.css" rel='stylesheet' type="text/css">
+
+        <script src="http://cdn.pydata.org/bokeh/release/bokeh-2.0.2.min.js"></script>
+        <script src="http://cdn.pydata.org/bokeh/release/bokeh-widgets-2.0.2.min.js"></script>
+        <title>Bokeh Scatter Plots</title>
+    </head>
+    <body>
+        <div> 
+          {{ div | safe}}
+          <script>{{script|safe}}</script>
+        </div>
+    </body>
+</html>
+
+ <!-- <h1 style="padding-top: 10%;"> Scatterplots </h1>
   <p>A scatterplot is a type of data display that shows the relationship between two numerical variables. 
      Each member of the dataset gets plotted as a point whose (x, y)(x,y)left parenthesis, x, comma, y, 
-     right parenthesis coordinates relates to its values for the two variables.</p>
+     right parenthesis coordinates relates to its values for the two variables.</p>-->
   
   {% endblock content %}
 
