@@ -1,0 +1,15 @@
+.center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+  }
+
+  body {
+    color: black;
+    background-color: #b4d7c0;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    background-image: linear-gradient(to bottom,#0788b3 0%, #2aa9d3 50%, #0788b3 100%);
+  }
