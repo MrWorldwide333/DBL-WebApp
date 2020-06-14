@@ -1,139 +1,130 @@
 <html>
 
-    <title>DBL vis</title>
+<title>DBL vis</title>
 
-    <style>
-        img {
-          display: block;
-          margin-left: auto;
-          margin-right: 300px;
-          margin-top:15px;
-        }
-        </style>
+<style>
+    img {
+        display: block;
+        margin-left: auto;
+        margin-right: 300px;
+        margin-top: 15px;
+    }
+</style>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width">
+    <meta charset="utf-8">
+    <link href="http://cdn.pydata.org/bokeh/release/bokeh-2.0.2.min.css" rel='stylesheet' type="text/css">
+    <link href="http://cdn.pydata.org/bokeh/release/bokeh-widgets-2.0.2.min.css" rel='stylesheet' type="text/css">
 
-    <img src="static/images/demoplot.jpeg", style="width:50%;">
+    <script src="http://cdn.pydata.org/bokeh/release/bokeh-2.0.2.min.js"></script>
+    <script src="http://cdn.pydata.org/bokeh/release/bokeh-widgets-2.0.2.min.js"></script>
 
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link href="static/css/sidebar.css" rel="stylesheet", type="text/css">
-        <link href="static/css/base.css" rel="stylesheet", type="text/css">
-        <link
-          href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700&display=swap"
-          rel="stylesheet"
-        />
-    </head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="static/css/sidebar.css" rel="stylesheet" , type="text/css">
+    <link href="static/css/base.css" rel="stylesheet" , type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700&display=swap"
+          rel="stylesheet" />
+</head>
 
-    <body>
-        <nav class="navbar">
+<body>
+    <nav class="navbar">
         <ul class="navbar-nav">
             <li class="logo">
-            <a href="#" class="nav-link">
-                <span class="link-text logo-text">Menu</span>
-                <svg
-                aria-hidden="true"
-                focusable="false"
-                data-prefix="fad"
-                data-icon="angle-double-right"
-                role="img"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 448 512"
-                class="svg-inline--fa fa-angle-double-right fa-w-14 fa-5x"
-                >
-                <g class="fa-group">
-                    <path
-                    fill="currentColor"
-                    d="M224 273L88.37 409a23.78 23.78 0 0 1-33.8 0L32 386.36a23.94 23.94 0 0 1 0-33.89l96.13-96.37L32 159.73a23.94 23.94 0 0 1 0-33.89l22.44-22.79a23.78 23.78 0 0 1 33.8 0L223.88 239a23.94 23.94 0 0 1 .1 34z"
-                    class="fa-secondary"
-                    ></path>
-                    <path
-                    fill="currentColor"
-                    d="M415.89 273L280.34 409a23.77 23.77 0 0 1-33.79 0L224 386.26a23.94 23.94 0 0 1 0-33.89L320.11 256l-96-96.47a23.94 23.94 0 0 1 0-33.89l22.52-22.59a23.77 23.77 0 0 1 33.79 0L416 239a24 24 0 0 1-.11 34z"
-                    class="fa-primary"
-                    ></path>
-                </g>
-                </svg>
-            </a>
+                <a href="#" class="nav-link">
+                    <span class="link-text logo-text">Menu</span>
+                    <svg aria-hidden="true"
+                         focusable="false"
+                         data-prefix="fad"
+                         data-icon="angle-double-right"
+                         role="img"
+                         xmlns="http://www.w3.org/2000/svg"
+                         viewBox="0 0 448 512"
+                         class="svg-inline--fa fa-angle-double-right fa-w-14 fa-5x">
+                        <g class="fa-group">
+                            <path fill="currentColor"
+                                  d="M224 273L88.37 409a23.78 23.78 0 0 1-33.8 0L32 386.36a23.94 23.94 0 0 1 0-33.89l96.13-96.37L32 159.73a23.94 23.94 0 0 1 0-33.89l22.44-22.79a23.78 23.78 0 0 1 33.8 0L223.88 239a23.94 23.94 0 0 1 .1 34z"
+                                  class="fa-secondary"></path>
+                            <path fill="currentColor"
+                                  d="M415.89 273L280.34 409a23.77 23.77 0 0 1-33.79 0L224 386.26a23.94 23.94 0 0 1 0-33.89L320.11 256l-96-96.47a23.94 23.94 0 0 1 0-33.89l22.52-22.59a23.77 23.77 0 0 1 33.79 0L416 239a24 24 0 0 1-.11 34z"
+                                  class="fa-primary"></path>
+                        </g>
+                    </svg>
+                </a>
             </li>
 
             <li class="nav-item">
-            <a href="#" class="nav-link">
-                <svg
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden="true"
-                focusable="false"
-                data-prefix="far"
-                data-icon="chart-bar"
-                class="svg-inline--fa fa-chart-bar fa-w-16"
-                role="img"
-                viewBox="0 0 512 512">
-                <g class="fa-group">
+                <a href="#" class="nav-link">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         aria-hidden="true"
+                         focusable="false"
+                         data-prefix="far"
+                         data-icon="chart-bar"
+                         class="svg-inline--fa fa-chart-bar fa-w-16"
+                         role="img"
+                         viewBox="0 0 512 512">
+                        <g class="fa-group">
 
-                    <path
-                    fill="currentColor"
-                    d="M396.8 352h22.4c6.4 0 12.8-6.4 12.8-12.8V108.8c0-6.4-6.4-12.8-12.8-12.8h-22.4c-6.4 0-12.8 6.4-12.8
+                            <path fill="currentColor"
+                                  d="M396.8 352h22.4c6.4 0 12.8-6.4 12.8-12.8V108.8c0-6.4-6.4-12.8-12.8-12.8h-22.4c-6.4 0-12.8 6.4-12.8
                        12.8v230.4c0 6.4 6.4 12.8 12.8 12.8zm-192 0h22.4c6.4 0 12.8-6.4 12.8-12.8V140.8c0-6.4-6.4-12.8-12.8-12.8h-22.4c-6.4 0-12.8
                        6.4-12.8 12.8v198.4c0 6.4 6.4 12.8 12.8 12.8zm96 0h22.4c6.4 0 12.8-6.4 12.8-12.8V204.8c0-6.4-6.4-12.8-12.8-12.8h-22.4c-6.4
                        0-12.8 6.4-12.8 12.8v134.4c0 6.4 6.4 12.8 12.8 12.8zM496 400H48V80c0-8.84-7.16-16-16-16H16C7.16 64 0 71.16 0 80v336c0 17.67
                        14.33 32 32 32h464c8.84 0 16-7.16 16-16v-16c0-8.84-7.16-16-16-16zm-387.2-48h22.4c6.4 0
                        12.8-6.4 12.8-12.8v-70.4c0-6.4-6.4-12.8-12.8-12.8h-22.4c-6.4 0-12.8 6.4-12.8 12.8v70.4c0 6.4 6.4 12.8 12.8 12.8z"
+                                  class="fa-primary"></path>
 
-                    class="fa-primary"
-                    ></path>
+                            <path fill="currentColor"></path>
 
-                    <path
-                    fill="currentColor"
-
-                    ></path>
-
-                </g>
-                </svg>
-                <span class="link-text">Bar Chart</span>
-            </a>
+                        </g>
+                    </svg>
+                    <span class="link-text">Bar Chart</span>
+                </a>
             </li>
 
             <!-- Scatter Plot button -->
 
             <li class="nav-item">
-            <a href="scatterplot" class="nav-link">
-                <svg
-                aria-hidden="true"
-                focusable="false"
-                data-prefix="far"
-                role="img"
-                xmlns="http://www.w3.org/2000/svg"
-
-                xmlns:xlink="http://www.w3.org/1999/xlink"
-                version="1.1"
-                x="0px"
-                y="0px"
-                viewBox="0 0 100 125"
-                style="enable-background:new 0 0 100 100;"
-                xml:space="preserve">
+                <a href="scatterplot" class="nav-link">
+                    <svg aria-hidden="true"
+                         focusable="false"
+                         data-prefix="far"
+                         role="img"
+                         xmlns="http://www.w3.org/2000/svg"
+                         xmlns:xlink="http://www.w3.org/1999/xlink"
+                         version="1.1"
+                         x="0px"
+                         y="0px"
+                         viewBox="0 0 100 125"
+                         style="enable-background:new 0 0 100 100;"
+                         xml:space="preserve">
 
                     <g class="fa-group">
-                        <path
-                        fill="currentColor"
-                        d="M91.8,88.7H15.8c-2.4,0-4.4-2-4.4-4.4V8.2C11.3,6.4,9.9,5,8.2,5S5,6.4,5,8.2v76.1C5,90.2,9.8,95,15.8,95h76.1
+                    <path fill="currentColor"
+                          d="M91.8,88.7H15.8c-2.4,0-4.4-2-4.4-4.4V8.2C11.3,6.4,9.9,5,8.2,5S5,6.4,5,8.2v76.1C5,90.2,9.8,95,15.8,95h76.1
                            c1.8,0,3.2-1.4,3.2-3.2S93.6,88.7,91.8,88.7z"
-                        class="fa-primary"
-                        ></path>
-                        <path
-                        fill="currentColor"
-                        d="M91.8,88.7H15.8c-2.4,0-4.4-2-4.4-4.4V8.2C11.3,6.4,9.9,5,8.2,5S5,6.4,5,8.2v76.1C5,90.2,9.8,95,15.8,95h76.1
+                          class="fa-primary"></path>
+                    <path fill="currentColor"
+                          d="M91.8,88.7H15.8c-2.4,0-4.4-2-4.4-4.4V8.2C11.3,6.4,9.9,5,8.2,5S5,6.4,5,8.2v76.1C5,90.2,9.8,95,15.8,95h76.1
                            c1.8,0,3.2-1.4,3.2-3.2S93.6,88.7,91.8,88.7z"
-                        class="fa-primary"
-                        ></path>
-                        <circle cx="28.7" cy="69" r="5.4" fill="currentColor" class="fa-secondary"/>
-                        <circle cx="48.5" cy="40.1" r="5.4" fill="currentColor" class="fa-secondary"/>
-                        <circle cx="55.4" cy="61.4" r="5.4" fill="currentColor" class="fa-secondary"/>
-                        <circle cx="70.6" cy="43.9" r="5.4" fill="currentColor" class="fa-secondary"/>
-                        <circle cx="78.9" cy="23.4" r="5.4" fill="currentColor" class="fa-secondary"/>
+                          class="fa-primary"></path>
+                    <circle cx="28.7" cy="69" r="5.4" fill="currentColor" class="fa-secondary" />
+
+                    <circle cx="48.5" cy="40.1" r="5.4" fill="currentColor" class="fa-secondary" />
+
+                    <circle cx="55.4" cy="61.4" r="5.4" fill="currentColor" class="fa-secondary" />
+
+                    <circle cx="70.6" cy="43.9" r="5.4" fill="currentColor" class="fa-secondary" />
+
+                    <circle cx="78.9" cy="23.4" r="5.4" fill="currentColor" class="fa-secondary" />
+
+
 
                     </g>
 
                 </svg>
-                <span class="link-text">Scatter Plot</span>
-            </a>
+                    <span class="link-text">Scatter Plot</span>
+                </a>
             </li>
 
 
@@ -141,19 +132,17 @@
 
             <li class="nav-item">
                 <a href="#" class="nav-link">
-                    <svg
-                    aria-hidden="true"
-                    focusable="false"
-                    data-prefix="far"
-                    role="img"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 900 900"
-                    class="svg-inline--fa fa-space-shuttle fa-w-20 fa-5x"
-                    transform="scale(-1,-1) scale(-1,1)">
-                    <g class="fa-group">
-                        <path
-                        fill="currentColor"
-                        d="M73 874 c-7 -20 4 -791 12 -804 9 -14 749 -14 776 0 21 12 25 40 7
+                    <svg aria-hidden="true"
+                         focusable="false"
+                         data-prefix="far"
+                         role="img"
+                         xmlns="http://www.w3.org/2000/svg"
+                         viewBox="0 0 900 900"
+                         class="svg-inline--fa fa-space-shuttle fa-w-20 fa-5x"
+                         transform="scale(-1,-1) scale(-1,1)">
+                        <g class="fa-group">
+                            <path fill="currentColor"
+                                  d="M73 874 c-7 -20 4 -791 12 -804 9 -14 749 -14 776 0 21 12 25 40 7
                         58 -8 8 -13 110 -17 356 -4 189 -8 347 -11 349 -3 3 -159 7 -348 9 -309 3
                         -342 5 -342 19 0 30 -66 41 -77 13z m47 -182 c0 -92 5 -237 10 -322 5 -91 5
                         -172 0 -195 -6 -26 -5 -44 2 -52 8 -10 87 -13 359 -13 322 0 420 -8 316 -24
@@ -172,11 +161,9 @@
                         -16 c0 -13 3 -40 6 -61 l7 -38 -69 3 -69 3 -3 49 c-4 59 4 66 76 66 47 0 52
                         -2 52 -22z m-320 -127 c0 -10 3 -33 6 -50 l7 -31 -76 0 c-101 0 -107 3 -107
                         56 l0 44 85 0 c76 0 85 -2 85 -19z"
-                        class="fa-primary"
-                        ></path>
-                        <path
-                        fill="currentColor"
-                        d="M73 874 c-7 -20 4 -791 12 -804 9 -14 749 -14 776 0 21 12 25 40 7
+                                  class="fa-primary"></path>
+                            <path fill="currentColor"
+                                  d="M73 874 c-7 -20 4 -791 12 -804 9 -14 749 -14 776 0 21 12 25 40 7
                         58 -8 8 -13 110 -17 356 -4 189 -8 347 -11 349 -3 3 -159 7 -348 9 -309 3
                         -342 5 -342 19 0 30 -66 41 -77 13z m47 -182 c0 -92 5 -237 10 -322 5 -91 5
                         -172 0 -195 -6 -26 -5 -44 2 -52 8 -10 87 -13 359 -13 322 0 420 -8 316 -24
@@ -195,80 +182,69 @@
                         -16 c0 -13 3 -40 6 -61 l7 -38 -69 3 -69 3 -3 49 c-4 59 4 66 76 66 47 0 52
                         -2 52 -22z m-320 -127 c0 -10 3 -33 6 -50 l7 -31 -76 0 c-101 0 -107 3 -107
                         56 l0 44 85 0 c76 0 85 -2 85 -19z"
-                        class="fa-primary"
-                        ></path>
-                    </g>
+                                  class="fa-primary"></path>
+                        </g>
                     </svg>
                     <span class="link-text">Heat Map</span>
                 </a>
-                </li>
+            </li>
 
-                <!-- -->
+            <!-- -->
 
 
             <li class="nav-item">
-            <a href="#" class="nav-link">
-                <svg
-                aria-hidden="true"
-                focusable="false"
-                data-prefix="fad"
-                role="img"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 512 512"
-                class="svg-inline--fa fa-space-station-moon-alt fa-w-16 fa-5x"
-                >
-                <g class="fa-group">
-                    <path
-                    fill="currentColor"
-                    d="M501.70312,224H448V160H368V96h48V66.67383A246.86934,246.86934,0,0,0,256,8C119.03125,8,8,119.0332,8,256a250.017,250.017,0,0,0,1.72656,28.26562C81.19531,306.76953,165.47656,320,256,320s174.80469-13.23047,246.27344-35.73438A250.017,250.017,0,0,0,504,256,248.44936,248.44936,0,0,0,501.70312,224ZM192,240a80,80,0,1,1,80-80A80.00021,80.00021,0,0,1,192,240ZM384,343.13867A940.33806,940.33806,0,0,1,256,352c-87.34375,0-168.71094-11.46094-239.28906-31.73633C45.05859,426.01953,141.29688,504,256,504a247.45808,247.45808,0,0,0,192-91.0918V384H384Z"
-                    class="fa-secondary"
-                    ></path>
-                    <path
-                    fill="currentColor"
-                    d="M256,320c-90.52344,0-174.80469-13.23047-246.27344-35.73438a246.11376,246.11376,0,0,0,6.98438,35.998C87.28906,340.53906,168.65625,352,256,352s168.71094-11.46094,239.28906-31.73633a246.11376,246.11376,0,0,0,6.98438-35.998C430.80469,306.76953,346.52344,320,256,320Zm-64-80a80,80,0,1,0-80-80A80.00021,80.00021,0,0,0,192,240Zm0-104a24,24,0,1,1-24,24A23.99993,23.99993,0,0,1,192,136Z"
-                    class="fa-primary"
-                    ></path>
-                </g>
-                </svg>
-                <span class="link-text">Radial Tree Map</span>
-            </a>
+                <a href="#" class="nav-link">
+                    <svg aria-hidden="true"
+                         focusable="false"
+                         data-prefix="fad"
+                         role="img"
+                         xmlns="http://www.w3.org/2000/svg"
+                         viewBox="0 0 512 512"
+                         class="svg-inline--fa fa-space-station-moon-alt fa-w-16 fa-5x">
+                        <g class="fa-group">
+                            <path fill="currentColor"
+                                  d="M501.70312,224H448V160H368V96h48V66.67383A246.86934,246.86934,0,0,0,256,8C119.03125,8,8,119.0332,8,256a250.017,250.017,0,0,0,1.72656,28.26562C81.19531,306.76953,165.47656,320,256,320s174.80469-13.23047,246.27344-35.73438A250.017,250.017,0,0,0,504,256,248.44936,248.44936,0,0,0,501.70312,224ZM192,240a80,80,0,1,1,80-80A80.00021,80.00021,0,0,1,192,240ZM384,343.13867A940.33806,940.33806,0,0,1,256,352c-87.34375,0-168.71094-11.46094-239.28906-31.73633C45.05859,426.01953,141.29688,504,256,504a247.45808,247.45808,0,0,0,192-91.0918V384H384Z"
+                                  class="fa-secondary"></path>
+                            <path fill="currentColor"
+                                  d="M256,320c-90.52344,0-174.80469-13.23047-246.27344-35.73438a246.11376,246.11376,0,0,0,6.98438,35.998C87.28906,340.53906,168.65625,352,256,352s168.71094-11.46094,239.28906-31.73633a246.11376,246.11376,0,0,0,6.98438-35.998C430.80469,306.76953,346.52344,320,256,320Zm-64-80a80,80,0,1,0-80-80A80.00021,80.00021,0,0,0,192,240Zm0-104a24,24,0,1,1-24,24A23.99993,23.99993,0,0,1,192,136Z"
+                                  class="fa-primary"></path>
+                        </g>
+                    </svg>
+                    <span class="link-text">Radial Tree Map</span>
+                </a>
             </li>
 
 
 
             <li class="nav-item">
-            <a href="home" class="nav-link">
-                <svg
-                aria-hidden="true"
-                focusable="false"
-                data-prefix="fad"
-                role="img"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 640 512"
-                class="svg-inline--fa fa-space-shuttle fa-w-20 fa-5x"
-                >
-                <g class="fa-group">
-                    <path
-                    fill="currentColor"
-                    d="M32 416c0 35.35 21.49 64 48 64h16V352H32zm154.54-232h280.13L376 168C243 140.59 222.45 51.22 128 34.65V160h18.34a45.62 45.62 0 0 1 40.2 24zM32 96v64h64V32H80c-26.51 0-48 28.65-48 64zm114.34 256H128v125.35C222.45 460.78 243 371.41 376 344l90.67-16H186.54a45.62 45.62 0 0 1-40.2 24z"
-                    class="fa-secondary"
-                    ></path>
-                    <path
-                    fill="currentColor"
-                    d="M592.6 208.24C559.73 192.84 515.78 184 472 184H186.54a45.62 45.62 0 0 0-40.2-24H32c-23.2 0-32 10-32 24v144c0 14 8.82 24 32 24h114.34a45.62 45.62 0 0 0 40.2-24H472c43.78 0 87.73-8.84 120.6-24.24C622.28 289.84 640 272 640 256s-17.72-33.84-47.4-47.76zM488 296a8 8 0 0 1-8-8v-64a8 8 0 0 1 8-8c31.91 0 31.94 80 0 80z"
-                    class="fa-primary"
-                    ></path>
-                </g>
-                </svg>
-                <span class="link-text">Home</span>
-            </a>
+                <a href="home" class="nav-link">
+                    <svg aria-hidden="true"
+                         focusable="false"
+                         data-prefix="fad"
+                         role="img"
+                         xmlns="http://www.w3.org/2000/svg"
+                         viewBox="0 0 640 512"
+                         class="svg-inline--fa fa-space-shuttle fa-w-20 fa-5x">
+                        <g class="fa-group">
+                            <path fill="currentColor"
+                                  d="M32 416c0 35.35 21.49 64 48 64h16V352H32zm154.54-232h280.13L376 168C243 140.59 222.45 51.22 128 34.65V160h18.34a45.62 45.62 0 0 1 40.2 24zM32 96v64h64V32H80c-26.51 0-48 28.65-48 64zm114.34 256H128v125.35C222.45 460.78 243 371.41 376 344l90.67-16H186.54a45.62 45.62 0 0 1-40.2 24z"
+                                  class="fa-secondary"></path>
+                            <path fill="currentColor"
+                                  d="M592.6 208.24C559.73 192.84 515.78 184 472 184H186.54a45.62 45.62 0 0 0-40.2-24H32c-23.2 0-32 10-32 24v144c0 14 8.82 24 32 24h114.34a45.62 45.62 0 0 0 40.2-24H472c43.78 0 87.73-8.84 120.6-24.24C622.28 289.84 640 272 640 256s-17.72-33.84-47.4-47.76zM488 296a8 8 0 0 1-8-8v-64a8 8 0 0 1 8-8c31.91 0 31.94 80 0 80z"
+                                  class="fa-primary"></path>
+                        </g>
+                    </svg>
+                    <span class="link-text">Home</span>
+                </a>
             </li>
 
 
 
         </ul>
-        </nav>
-        <div>{{div|safe}}</div>
+    </nav>
+    <div>
+        {{div|safe}}
         <script>{{ script|safe }}</script>
-    </body>
+    </div>
+</body>
 </html>
