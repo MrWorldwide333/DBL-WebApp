@@ -13,6 +13,12 @@ import os
 import numpy as np
 import pandas as pd
 
+import datetime
+import plotly.io as pio
+
+import plotly.graph_objects as go
+from ipywidgets import widgets
+
 app = Flask(__name__)
 
 
@@ -23,7 +29,78 @@ def home():
 
 @app.route("/vis")
 def vis():
-    return render_template('vis.html')
+    df = pd.read_csv("all_fixation_data_cleaned_up.csv", encoding='latin1', sep=";")
+    image_name = './static/images/MetroMapsEyeTracking/stimuli/01_Antwerpen_S1.jpg'
+
+    def get_data(df, image):
+        X = df["MappedFixationPointX"][df["StimuliName"] == image]
+        Y = img_height - df["MappedFixationPointY"][df["StimuliName"] == image]
+        Z = df["FixationDuration"][df["StimuliName"] == image]
+
+        dict_of_fig = dict({
+            "data": [{"type": "histogram2dcontour",
+                    "x": X,
+                    "y": Y,
+                    "z": Z,
+                    "hovertemplate": "Fixation Duration (ms): %{z}",
+                    "histfunc": "min",
+                    "histnorm": "probability"}],
+            "layout": {"title": {"text": "A Figure Specified By A Graph Object With A Dictionary"}}
+        })
+        
+        return dict_of_fig
+
+    def stimuliListMaker(dataframe): #Makes a list with all stimulinames for 
+        images=dataframe["StimuliName"].unique().copy()
+        menu=[]
+        for i in images:
+            menu.append(i)
+        return menu
+
+    def create_plot(dictionary, df):
+            
+        fig = go.FigureWidget(dictionary)
+            
+        return fig
+
+    def validate():
+        if stimuli.value in df['StimuliName'].unique():
+            return True
+        else:
+            return False
+
+    def update_plot_stimuli(change):
+        if validate():
+            image = stimuli.value #Image is selected value
+            df = pd.read_csv("all_fixation_data_cleaned_up.csv.csv", encoding='latin1', sep=";")
+            data_new = get_data(df, image)
+            plotdata = create_plot(data_new, df)
+            plotdata
+        else:
+            print("error")
+            
+            
+    stimuli = widgets.Dropdown(
+        options=stimuliListMaker(df),
+        value='./static/images/MetroMapsEyeTracking/stimuli/01_Antwerpen_S1.jpg',
+        description='Stimuli: ',
+    )
+        
+    user_select = widgets.Dropdown(
+        description='User:  ',
+        value='p1',
+        options=df['user'].unique().tolist()
+    )        
+            
+    stimuli.observe(update_plot_stimuli, names="value") 
+
+    container = widgets.HBox([stimuli, user_select])
+
+    source = get_data(df, image_name)
+    final = create_plot(source, df)
+    plot = widgets.VBox([container, final])
+    script, div = components(plot, wrap_script=False)
+    return render_template('vis.html', script=script, div=div)
 
 @app.route("/about")
 def about():
