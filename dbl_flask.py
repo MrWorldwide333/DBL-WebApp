@@ -226,10 +226,13 @@ def about():
 
     stimuliSelect_callback = CustomJS(args=dict(source=source, users=user_select.value, dataframe=ColumnDataSource(df), source_image=source_image, factor=factor), code=
         """
+            //Collect every piece of data and that is given in the dictionary and put it in a variable
             var datadf = dataframe.data
             var datasource = source.data;
             var userList = users;
             var dataimagesource= source_image.data;
+
+            //Collect data on the new stimuli, so how wide is the corresponding image
             var new_image = new Image();
             new_image.onload = function() {
                 dataimagesource['h'][0] = this.height;
@@ -238,10 +241,10 @@ def about():
             } 
             var image_height = dataimagesource['h'][0];
             var image_width = dataimagesource['w'][0];
-
             var new_stimuli = cb_obj.value;
             var location= ("./static/images/MetroMapsEyeTracking/stimuli/"+new_stimuli)
             dataimagesource['url'][0] = location
+
 
             var f= factor;
             //console.log(userList[0]);
@@ -269,6 +272,7 @@ def about():
                         datasource['y'].push(image_height - datadf['MappedFixationPointY'][i])
                         datasource['fixationtime'].push(datadf['FixationDuration'][i])
 
+                        // Check if Radius that we want to give to the circle isn't to big. Else cap it to 75 px and make the circle RED
                         var Radius = datadf['FixationDuration'][i]*f;
                         if (Radius > 75) {
                             datasource['radius'].push(75)
@@ -290,6 +294,7 @@ def about():
                 }
             }
             //console.log(datasource['x']);
+            //source.change.emit() and source_image.change.emit() are needed to actually update the data that's in the source
             source.change.emit();
             source_image.change.emit();
         """)
