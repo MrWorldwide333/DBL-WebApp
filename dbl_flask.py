@@ -13,6 +13,9 @@ from PIL import Image
 import os
 import numpy as np
 import pandas as pd
+from pandas import ExcelWriter
+from pandas import ExcelFile
+
 
 app = Flask(__name__)
 
@@ -33,6 +36,8 @@ def about():
     #THIS CELL IS THE ACTUAL CODE, THE OTHER CELLS ARE FOR PRACTICE!!!!!!!!
     #Code that is commented out in this cell is old code, it's there as a backup for if all fails
 
+    image_data= pd.read_excel("./static/images/MetroMapsEyeTracking/stimuli/resolution.xlsx", encoding='latin1')
+    df_images= image_data.copy()
 
     image_name="01_Antwerpen_S1.jpg"
     image_location = "./static/images/MetroMapsEyeTracking/stimuli/{}".format(image_name)
@@ -145,7 +150,6 @@ def about():
         
         image1 = ImageURL(url="url", x="x", y="y", w="w", h="h", anchor="top_left")
         plot.add_glyph(source_image, image1)
-
         # plot.image_url(url=[image_location], x=0, y=image_height, w=image_width, h=image_height)
         plot.circle(x='x', y='y', size='radius', color='color', alpha=0.2, source=source)
         return plot
@@ -223,27 +227,137 @@ def about():
                         options=user_list ) #Don't forget to press shift or control (shift for everyone in between, control for selecting specific people) when selecting multiple users
     # user_select.on_change("value", update_plot_user)
     
-
-    stimuliSelect_callback = CustomJS(args=dict(source=source, users=user_select.value, dataframe=ColumnDataSource(df), source_image=source_image, factor=factor), code=
+    fileInput_callback = CustomJS(args=dict(source=source, dataframe=ColumnDataSource(df), factor=factor, stimuli=stimuliSelect, users=user_select, FileInput=File_Input), code= 
         """
+            
+            //Collect every piece of data and that is given in the dictionary and put it in a variable
+            var File_name=FileInput.filename;
+            console.log(File_name);
+            var oldDatadf = dataframe.data;
+            var datasource = source.data;
+            var userList = users.value;
+            var newDatadf = atob(cb_obj.value);
+            console.log(newDatadf);
+            
+
+            var f = factor;
+    
+            //Empty all lists that are in the source so that we can add new values to them
+            datasource['x']=[];
+            datasource['y']=[];
+            datasource['fixationtime']=[];
+            datasource['radius']=[];
+            datasource['user']=[];
+            datasource['description']=[];
+            datasource['color']=[];
+
+
+        """
+    )
+
+    userSelect_callback = CustomJS(args=dict(source=source, dataframe=ColumnDataSource(df), source_image=source_image, factor=factor, stimuli=stimuliSelect), code=
+        """
+            //Collect every piece of data and that is given in the dictionary and put it in a variable
+            var datadf = dataframe.data
+            var datasource = source.data;
+            var userList = cb_obj.value;
+            var dataimagesource= source_image.data;
+
+            var image_height = dataimagesource['h'][0];
+            var image_width = dataimagesource['w'][0];
+
+            var stimuli_name=stimuli.value;
+
+            var f = factor;
+
+            //Empty all lists that are in the source so that we can add new values to them
+            datasource['x']=[];
+            datasource['y']=[];
+            datasource['fixationtime']=[];
+            datasource['radius']=[];
+            datasource['user']=[];
+            datasource['description']=[];
+            datasource['color']=[];
+
+            for (var i = 0; i < datadf['StimuliName'].length; i++) { //MAYBE LOOK INTO PANDAS FOR JAVASCRIPT AS IT WOULD BE A LOT CLEANER THAN THIS 
+                if (userList[0] == "Everyone") {
+                    if (datadf['StimuliName'][i] == stimuli_name ) {
+                        datasource['x'].push(datadf['MappedFixationPointX'][i])
+                        datasource['y'].push(image_height - datadf['MappedFixationPointY'][i])
+                        datasource['fixationtime'].push(datadf['FixationDuration'][i])
+
+                        // Check if Radius that we want to give to the circle isn't to big. Else cap it to 75 px and make the circle RED
+                        var Radius = datadf['FixationDuration'][i]*f;
+                        if (Radius > 75) {
+                            datasource['radius'].push(75)
+                            datasource['color'].push("RED")
+                        }
+                        else {
+                            datasource['radius'].push(Radius)
+                            datasource['color'].push("BLUE")
+                        }
+                        
+                        datasource['user'].push(datadf['user'][i])
+                        datasource['description'].push(datadf['description'][i])
+                    }
+                } else {
+                    for (var j=0; j < userList.length; j++){
+                        if (datadf['StimuliName'][i] == stimuli_name && datadf['user'][i] == userList[j]) {
+                            datasource['x'].push(datadf['MappedFixationPointX'][i])
+                            datasource['y'].push(image_height - datadf['MappedFixationPointY'][i])
+                            datasource['fixationtime'].push(datadf['FixationDuration'][i])
+
+                            // Check if Radius that we want to give to the circle isn't to big. Else cap it to 75 px and make the circle RED
+                            var Radius = datadf['FixationDuration'][i]*f;
+                            if (Radius > 75) {
+                                datasource['radius'].push(75)
+                                datasource['color'].push("RED")
+                            }
+                            else {
+                                datasource['radius'].push(Radius)
+                                datasource['color'].push("BLUE")
+                            }
+                            
+                            datasource['user'].push(datadf['user'][i])
+                            datasource['description'].push(datadf['description'][i])
+                        }
+                    }
+                }
+            }
+            source.change.emit();
+
+
+        """
+    )
+
+    stimuliSelect_callback = CustomJS(args=dict(source=source, dataframe=ColumnDataSource(df), source_image=source_image, factor=factor, users=user_select), code=
+        """
+            users.value=["Everyone"]
+
             //Collect every piece of data and that is given in the dictionary and put it in a variable
             var datadf = dataframe.data
             var datasource = source.data;
             var userList = users;
             var dataimagesource= source_image.data;
+            
+            var new_stimuli = cb_obj.value;
+            var location= ("./static/images/MetroMapsEyeTracking/stimuli/"+new_stimuli)
+            dataimagesource['url'][0] = location    
 
             //Collect data on the new stimuli, so how wide is the corresponding image
+            //COMMENT ON IMAGE SIZES: THE SIZE OF THE IMAGE DOESN'T CORRESPOND WITH THE DATAFRAME -_-. That's probably why we were also given a .csv File with the sizes of all the images.
+
+
             var new_image = new Image();
+            new_image.src= location
             new_image.onload = function() {
                 dataimagesource['h'][0] = this.height;
                 dataimagesource['w'][0] = this.width;
-                
             } 
             var image_height = dataimagesource['h'][0];
             var image_width = dataimagesource['w'][0];
-            var new_stimuli = cb_obj.value;
-            var location= ("./static/images/MetroMapsEyeTracking/stimuli/"+new_stimuli)
-            dataimagesource['url'][0] = location
+            
+            
 
 
             var f= factor;
@@ -261,12 +375,11 @@ def about():
             datasource['user']=[];
             datasource['description']=[];
             datasource['color']=[];
-
             
 
             //Add new values to the lists in the source
             for (var i = 0; i < datadf['StimuliName'].length; i++) { //MAYBE LOOK INTO PANDAS FOR JAVASCRIPT AS IT WOULD BE A LOT CLEANER THAN THIS 
-                if (userList[0] == "Everyone") {
+                if (userList.value[0] == "Everyone") {
                     if (datadf['StimuliName'][i] == new_stimuli ) {
                         datasource['x'].push(datadf['MappedFixationPointX'][i])
                         datasource['y'].push(image_height - datadf['MappedFixationPointY'][i])
@@ -293,14 +406,35 @@ def about():
 
                 }
             }
-            //console.log(datasource['x']);
+
+            
+
+            //https://appdividend.com/2019/04/11/how-to-get-distinct-values-from-array-in-javascript/
+            //This function makes a list filter on unique values
+            const unique = (value, index, self) => {
+                return self.indexOf(value) === index
+            }
+            //Make a new List that will replace the old list with all users that look at the newly selected stimuli.
+            var distinct_userList= ['Everyone'] 
+            var distinctList=datasource['user'].filter(unique);
+            for (var i=0; i < (distinctList.length); i++){
+                //console.log(datasource['user'].filter(unique))
+                distinct_userList.push(distinctList[i]);
+            }
+            users.options=distinct_userList;
+            
+            
             //source.change.emit() and source_image.change.emit() are needed to actually update the data that's in the source
+            //users.options=["Everyone", "P1"];
+            //users.value=["Everyone"]
             source.change.emit();
             source_image.change.emit();
         """)
 
     #JS_Callbacks, so basically calling an update function that runs on Javascript -_-
     stimuliSelect.js_on_change('value', stimuliSelect_callback)
+    user_select.js_on_change('value', userSelect_callback)
+    File_Input.js_on_change('value', fileInput_callback)
 
     scatterplot = make_plot(Tools_vis1, source)
     controls = column(File_Input, stimuliSelect, user_select)
