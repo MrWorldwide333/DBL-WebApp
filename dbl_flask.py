@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for
+from flask import Flask, render_template, url_for, request
 from bokeh.io import push_notebook, show, output_notebook,curdoc
 from bokeh.server.server import Server
 from bokeh.embed import components, server_document
@@ -29,13 +29,22 @@ def home():
 def vis():
     return render_template('vis.html')
 
-@app.route("/about")
+@app.route("/about", methods=["POST", "GET"])
 def about():
 
     #Making
     #THIS CELL IS THE ACTUAL CODE, THE OTHER CELLS ARE FOR PRACTICE!!!!!!!!
     #Code that is commented out in this cell is old code, it's there as a backup for if all fails
-
+    file_name="all_fixation_data_cleaned_up.csv"
+    if request.method == "POST":
+        file = request.files["FileSelect"]
+        if file.filename == '':
+            print("No file to be found, We'll use the example dataset")
+        else:
+            print(file.filename)
+            file_name=file.filename
+        
+        
     image_data= pd.read_excel("./static/images/MetroMapsEyeTracking/stimuli/resolution.xlsx", encoding='latin1')
     df_images= image_data.copy()
 
@@ -51,7 +60,7 @@ def about():
             h  = [image_height]
         ))
     
-    Eyetracking_data = pd.read_csv("all_fixation_data_cleaned_up.csv", encoding='latin1', sep="\t")
+    Eyetracking_data = pd.read_csv(file_name, encoding='latin1', sep="\t")
     Eyetracking_data
     df = Eyetracking_data.copy()
     
@@ -214,7 +223,7 @@ def about():
     
 
     #Code needed for file upload system
-    File_Input = FileInput(filename="all_fixation_data_cleaned_up.csv", accept=".csv")
+    # File_Input = FileInput(filename="all_fixation_data_cleaned_up.csv", accept=".csv")
     # File_Input.on_change('value', update_plot_dataset)
     
     
@@ -227,33 +236,33 @@ def about():
                         options=user_list ) #Don't forget to press shift or control (shift for everyone in between, control for selecting specific people) when selecting multiple users
     # user_select.on_change("value", update_plot_user)
     
-    fileInput_callback = CustomJS(args=dict(source=source, dataframe=ColumnDataSource(df), factor=factor, stimuli=stimuliSelect, users=user_select, FileInput=File_Input), code= 
-        """
+    # fileInput_callback = CustomJS(args=dict(source=source, dataframe=ColumnDataSource(df), factor=factor, stimuli=stimuliSelect, users=user_select, FileInput=File_Input), code= 
+    #     """
             
-            //Collect every piece of data and that is given in the dictionary and put it in a variable
-            var File_name=FileInput.filename;
-            console.log(File_name);
-            var oldDatadf = dataframe.data;
-            var datasource = source.data;
-            var userList = users.value;
-            var newDatadf = atob(cb_obj.value);
-            console.log(newDatadf);
+    #         //Collect every piece of data and that is given in the dictionary and put it in a variable
+    #         var File_name=FileInput.filename;
+    #         console.log(File_name);
+    #         var oldDatadf = dataframe.data;
+    #         var datasource = source.data;
+    #         var userList = users.value;
+    #         var newDatadf = atob(cb_obj.value);
+    #         console.log(newDatadf);
             
 
-            var f = factor;
+    #         var f = factor;
     
-            //Empty all lists that are in the source so that we can add new values to them
-            datasource['x']=[];
-            datasource['y']=[];
-            datasource['fixationtime']=[];
-            datasource['radius']=[];
-            datasource['user']=[];
-            datasource['description']=[];
-            datasource['color']=[];
+    #         //Empty all lists that are in the source so that we can add new values to them
+    #         datasource['x']=[];
+    #         datasource['y']=[];
+    #         datasource['fixationtime']=[];
+    #         datasource['radius']=[];
+    #         datasource['user']=[];
+    #         datasource['description']=[];
+    #         datasource['color']=[];
 
 
-        """
-    )
+    #     """
+    # )
 
     userSelect_callback = CustomJS(args=dict(source=source, dataframe=ColumnDataSource(df), source_image=source_image, factor=factor, stimuli=stimuliSelect), code=
         """
@@ -345,7 +354,7 @@ def about():
             dataimagesource['url'][0] = location    
 
             //Collect data on the new stimuli, so how wide is the corresponding image
-            //COMMENT ON IMAGE SIZES: THE SIZE OF THE IMAGE DOESN'T CORRESPOND WITH THE DATAFRAME -_-. That's probably why we were also given a .csv File with the sizes of all the images.
+            //COMMENT ON IMAGE SIZES: THE SIZE OF THE IMAGE DOESN'T CORRESPOND WITH THE DATAFRAME -_-. That's probably why we were also given a .csv File with the sizes of all the images. However this file is hard to make a correct dataframe from
 
 
             var new_image = new Image();
@@ -356,9 +365,6 @@ def about():
             } 
             var image_height = dataimagesource['h'][0];
             var image_width = dataimagesource['w'][0];
-            
-            
-
 
             var f= factor;
             //console.log(userList[0]);
@@ -434,10 +440,10 @@ def about():
     #JS_Callbacks, so basically calling an update function that runs on Javascript -_-
     stimuliSelect.js_on_change('value', stimuliSelect_callback)
     user_select.js_on_change('value', userSelect_callback)
-    File_Input.js_on_change('value', fileInput_callback)
+    # File_Input.js_on_change('value', fileInput_callback)
 
     scatterplot = make_plot(Tools_vis1, source)
-    controls = column(File_Input, stimuliSelect, user_select)
+    controls = column(stimuliSelect, user_select)
     layout = row(scatterplot, controls)
     # curdoc.add_root(layout)
     script, div = components(layout, wrap_script=False)

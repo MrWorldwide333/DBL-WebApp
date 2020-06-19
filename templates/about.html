@@ -97,14 +97,23 @@
 
         <script src="http://cdn.pydata.org/bokeh/release/bokeh-2.0.2.min.js"></script>
         <script src="http://cdn.pydata.org/bokeh/release/bokeh-widgets-2.0.2.min.js"></script>
+        <!--
         <script src="https://gmousse.github.io/dataframe-js/dist/dataframe.min.js"></script>
+        
         <script>
           import DataFrame from 'dataframe-js';
-        </script>
-        <title>Bokeh Scatter Plots</title>
+        </script> -->
+        Bokeh Scatter Plots</title>
     </head>
     <body>
-      
+        </div>
+        <div> 
+          <form action="#" method="POST" enctype="multipart/form-data">
+              <input type="file" name="FileSelect" id="FileSelect" >
+              <button type="submit">Choose File(s)</button>
+              <span ></span>
+          </form>
+      </div>
         <div> 
           {{ div | safe}}
           <script>{{script|safe}}</script>
