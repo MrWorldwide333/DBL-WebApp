@@ -16,6 +16,11 @@ import pandas as pd
 from pandas import ExcelWriter
 from pandas import ExcelFile
 
+from bokeh.models import FixedTicker, FuncTickFormatter
+from bokeh.transform import dodge
+
+
+
 
 app = Flask(__name__)
 
@@ -447,15 +452,115 @@ def about():
 #     layout = row(scatterplot, controls)
 #     # curdoc.add_root(layout)
 
+    #CODE FOR THE GAZE STRIPE PLOT
+    #The Gaze stripe plot has been made with the help of the following link: https://stackoverflow.com/questions/61908232/python-image-multiple-crops-with-pillow-and-grouped-and-displayed-in-a-row-with
+    
+    #Collecting the .csv file name from the POST method. If nothing has been posted yet, just take the example dataframe
+    file_name="all_fixation_data_cleaned_up.csv"
+    user_list=["Everyone"]
+    image_name=""
+    def userListMaker(dataframe, stimuli):
+        user_series = dataframe["user"][dataframe["StimuliName"] == stimuli].unique().copy()
+        userlist=[]
+        userlist.append({"name" : "Everyone"})
+        for i in user_series:
+            userlist.append({"name":i})
+        return userlist
+
+    def stimuliListMaker(dataframe): #Makes a list with all stimulinames for 
+        images=dataframe["StimuliName"].unique().copy()
+        menu=[]
+        for i in images:
+            menu.append({"name": i})
+        return menu
+    
+
+    #MAKE THIS BETTER AS IT STILL HAS A FEW BUGS :\
+    #FIX user select and stimuli select at the same time, just make sure everything is logical and can't give errors in any way
+    if request.method == "POST":
+        file = request.files["FileSelect"]
+        if file.filename == '':
+            print("No file to be found, We'll use the example dataset")
+            if request.form.getlist("user_select") != []:
+                user_list = request.form.getlist("user_select")
+            if request.form.get("stimuli_select") != "":
+                image_name = request.form.get("stimuli_select")
+                print(image_name)
+        else:
+            print(file.filename)
+            file_name=file.filename
+        print(user_list)
+
+    
 
 
+    #Make the dataframe
+    Eyetracking_data = pd.read_csv(file_name, encoding='latin1', sep="\t")
+    Eyetracking_data
+    df = Eyetracking_data.copy()
+
+    #Get first image name from the dataset
+    if image_name == "":
+        image_name=df["StimuliName"][0]
+
+    if user_list == ["Everyone"]:
+        df_stimuli = df[df["StimuliName"] == image_name].copy()
+    else:
+        df_stimuli = df[(df["StimuliName"] == image_name) & (df["user"].isin(user_list))].copy()
+
+    image_location = './static/images/MetroMapsEyeTracking/stimuli/{}'.format(image_name)
+    #Get the X and Y coordinates of the points where people looked at and put them in a list
+    coordinates = list(df_stimuli[['MappedFixationPointX', 'MappedFixationPointY']].itertuples(index=False, name=None))
+    picture_size = 100 #Can be any value, I liked this one. (Maybe make a potential slider for size?)
+
+    #Open the image and convert is to an image with RedGreenBlueAlpha as it's color scheme
+    image = Image.open(image_location).convert('RGBA')
+    images = [] #Here will all cropped images be appended to.
+    for x, y in coordinates:
+        box = (x - picture_size / 2, y - picture_size / 2, x + picture_size / 2, y + picture_size / 2) #Takes a certain part of the image in accordance with the coordinate given and size of the "box" it makes. Keep in mind this line isn't an actual image but more like a placeholder
+        images.append(np.array(image.crop(box)).view(np.uint32)[::-1]) #Append the part of the image into the images list.
+
+    #Make a new column in df_stimuli called 'Image'
+    df_stimuli['Image'] = images
+
+    # There's probably a better method to populate `TimeCoord` which I don't know.
+    df_stimuli = df_stimuli.sort_values('FixationDuration') #Sort the rows in df_stimuli by 'FixationDuration'
+    df_stimuli['TimeCoord'] = 0 #Makes new column in df_stimuli called 'TimeCoord' (In what order did the user look at the set of coordinates) and sets all values to 0.
+    for u in df_stimuli['user'].unique(): 
+        user_df = (df_stimuli['user'] == u) 
+        df_stimuli.loc[user_df, 'TimeCoord'] = np.arange(user_df.sum()) #Add for the currend user 'u' in df_stimuli the sum of all rows that this user possesses for this stimuli
+
+    
+    #This part replaces the values in the user colomn with a sort of zipped dictionary where the user is inserted and a list with the tuple describing the dimension of df_stimuli[0] (may be any number)
+    user_coords = dict(zip(df_stimuli['user'].unique(), range(df_stimuli.shape[0]))) 
+    df_stimuli['UserCoord'] = df_stimuli['user'].replace(user_coords)
+
+        
+    gaze_stripe_plot = figure(match_aspect=True)  #Really needs to be True in order for the squares to not becomes messed up.
+    for r in [gaze_stripe_plot.xaxis, gaze_stripe_plot.xgrid, gaze_stripe_plot.ygrid]: #Basically just turn the xaxis, xgrid and y grid invisible as you don't need them
+        r.visible = False
+
+    # Manually creating a categorical-like axis to make sure that we can use `dodge` below.
+    gaze_stripe_plot.yaxis.ticker = FixedTicker(ticks=list(user_coords.values())) 
+    gaze_stripe_plot.yaxis.formatter = FuncTickFormatter(args=dict(rev_user_coords={v: k for k, v in user_coords.items()}),
+                                        code="return rev_user_coords[tick];")
 
 
+    source = ColumnDataSource(df_stimuli)
+    img_size = 0.8
+    gaze_stripe_plot.image_rgba(image='Image',
+                x=dodge('TimeCoord', -img_size / 2), y=dodge('UserCoord', -img_size / 2),
+                dw=img_size, dh=img_size, source=source)
+    gaze_stripe_plot.rect(x='TimeCoord', y='UserCoord', width=img_size, height=img_size, source=source,
+        line_dash='dashed', fill_alpha=0)
+
+    layout = row(gaze_stripe_plot)
 
 
 
     script, div = components(layout, wrap_script=False)
-    return render_template('about.html', script=script, div=div)
+
+    return render_template('about.html', script=script, div=div, userdata= userListMaker(df, image_name), stimulidata=stimuliListMaker(df))
     #return render_template('about.html')
 
 if __name__ == '__main__':
