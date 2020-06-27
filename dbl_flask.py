@@ -13,14 +13,15 @@ import os
 import numpy as np
 import pandas as pd
 
-import datetime
-import plotly.io as pio
+# import plotly.io as pio
+import json
+import plotly
+import yfinance as yf
 
-import plotly.graph_objects as go
-from ipywidgets import widgets
+# from plotly.offline import download_plotlyjs, plot
+import plotly.graph_objs as go
 
 app = Flask(__name__)
-
 
 @app.route("/")
 @app.route("/home")
@@ -29,78 +30,150 @@ def home():
 
 @app.route("/vis")
 def vis():
-    df = pd.read_csv("all_fixation_data_cleaned_up.csv", encoding='latin1', sep=";")
-    image_name = './static/images/MetroMapsEyeTracking/stimuli/01_Antwerpen_S1.jpg'
+    df = pd.read_csv("all_fixation_data_cleaned_up.csv", encoding='latin1', sep="\t")
+    image_name = '01_Antwerpen_S1.jpg'
+    image_location = "./static/images/MetroMapsEyeTracking/stimuli/{}".format(image_name)
+    image= Image.open(image_location)
+    img_width, img_height = image.size
+    stimuli_list = df["StimuliName"].unique()
+    user_list = df["user"].unique()
+    series_stimuli = pd.Series(stimuli_list)
+    series_users = pd.Series(user_list)
 
-    def get_data(df, image):
-        X = df["MappedFixationPointX"][df["StimuliName"] == image]
-        Y = img_height - df["MappedFixationPointY"][df["StimuliName"] == image]
-        Z = df["FixationDuration"][df["StimuliName"] == image]
+    #Creates a dictionary to get the data of a specific stimuli
+    def get_data(df, figure):
+        X = df["MappedFixationPointX"][df["StimuliName"] == figure].unique().tolist()
+        Y = (img_height - df["MappedFixationPointY"][df["StimuliName"] == figure]).unique().tolist()
+        Z = df["FixationDuration"][df["StimuliName"] == figure].unique().tolist()
 
         dict_of_fig = dict({
-            "data": [{"type": "histogram2dcontour",
                     "x": X,
                     "y": Y,
                     "z": Z,
                     "hovertemplate": "Fixation Duration (ms): %{z}",
-                    "histfunc": "min",
-                    "histnorm": "probability"}],
-            "layout": {"title": {"text": "A Figure Specified By A Graph Object With A Dictionary"}}
-        })
-        
+                    "line": {"smoothing": 1.3},
+                    "contours": {"showlines": False},
+                    "ncontours": 30})
+    
         return dict_of_fig
 
-    def stimuliListMaker(dataframe): #Makes a list with all stimulinames for 
-        images=dataframe["StimuliName"].unique().copy()
-        menu=[]
-        for i in images:
-            menu.append(i)
-        return menu
+    #Creates the plot
+    def create_plot(df):
+        #empty plot
+        fig = go.Figure()
 
-    def create_plot(dictionary, df):
-            
-        fig = go.FigureWidget(dictionary)
-            
-        return fig
+        #Loops through all the stimuli and adds a trace to the empty plot for every single one
+        for image in df["StimuliName"].unique().tolist():
+            source = get_data(df, image)
+            fig.add_trace(
+                go.Histogram2dContour(source)
+            )
 
-    def validate():
-        if stimuli.value in df['StimuliName'].unique():
-            return True
-        else:
-            return False
+        def create_stimuli_dropdown(image):
+            return dict(label = image,
+                        method = 'update',
+                        args = [{'visible': stimuli_list == image,
+                                'title': image,
+                                'showlegend': True}])
 
-    def update_plot_stimuli(change):
-        if validate():
-            image = stimuli.value #Image is selected value
-            df = pd.read_csv("all_fixation_data_cleaned_up.csv.csv", encoding='latin1', sep=";")
-            data_new = get_data(df, image)
-            plotdata = create_plot(data_new, df)
-            plotdata
-        else:
-            print("error")
-            
-            
-    stimuli = widgets.Dropdown(
-        options=stimuliListMaker(df),
-        value='./static/images/MetroMapsEyeTracking/stimuli/01_Antwerpen_S1.jpg',
-        description='Stimuli: ',
-    )
+        fig.update_layout(
+            updatemenus=[dict(
+                active = 0,
+                buttons = list(series_stimuli.map(lambda image: create_stimuli_dropdown(image))),
+                direction="down",
+                pad={"r": 10, "t": 10},
+                showactive=True,
+                x=0.1,
+                xanchor="left",
+                y=1.25,
+                yanchor="top"
+            ),
+                dict(
+                    buttons=list([
+                        dict(
+                            args=["histfunc", "count"],
+                            label="Count",
+                            method="restyle"
+                        ),
+                        dict(
+                            args=["histfunc", "avg"],
+                            label="Average",
+                            method="restyle"
+                        ),
+                        dict(
+                            args=["histfunc", "sum"],
+                            label="Sum",
+                            method="restyle"
+                        ),
+                        dict(
+                            args=["histfunc", "min"],
+                            label="Minimum",
+                            method="restyle"
+                        ),
+                        dict(
+                            args=["histfunc", "max"],
+                            label="Maximum",
+                            method="restyle"
+                        )       
+                    ]),
+                    direction="down",
+                    pad={"r":10, "t":10},
+                    showactive=True,
+                    x=0.45,
+                    xanchor="left",
+                    y=1.25,
+                    yanchor="top"
+            ),
+                dict(
+                    buttons=list([
+                        dict(
+                            args=["histnorm", ""],
+                            label="Standard",
+                            method="restyle"
+                        ),
+                        dict(
+                            args=["histnorm", "percent"],
+                            label="Percent",
+                            method="restyle"
+                        ),
+                        dict(
+                            args=["histnorm", "probability"],
+                            label="Probability",
+                            method="restyle"
+                        ),
+                        dict(
+                            args=["histnorm", "density"],
+                            label="Density",
+                            method="restyle"
+                        ),
+                        dict(
+                            args=["histnorm", "probability density"],
+                            label="Density Probability",
+                            method="restyle"
+                        )
+                    ]),
+                    direction="down",
+                    pad={"r":10, "t":10},
+                    showactive=True,
+                    x=0.80,
+                    xanchor="left",
+                    y=1.25,
+                    yanchor="top"
+                )
+
+        ])
+
+        fig.update_layout(
+            autosize=True,
+            xaxis=dict(range=[0, img_width]),
+            yaxis=dict(range=[0, img_height])
+        )
+
+        graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+        return graphJSON
         
-    user_select = widgets.Dropdown(
-        description='User:  ',
-        value='p1',
-        options=df['user'].unique().tolist()
-    )        
-            
-    stimuli.observe(update_plot_stimuli, names="value") 
-
-    container = widgets.HBox([stimuli, user_select])
-
-    source = get_data(df, image_name)
-    final = create_plot(source, df)
-    plot = widgets.VBox([container, final])
-    script, div = components(plot, wrap_script=False)
-    return render_template('vis.html', script=script, div=div)
+    plot = create_plot(df)
+    return render_template('vis.html', plot=plot)
 
 @app.route("/about")
 def about():

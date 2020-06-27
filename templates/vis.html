@@ -2,25 +2,25 @@
 
     <title>DBL vis</title>
 
-    <style>
-        img {
-          display: block;
-          margin-left: auto;
-          margin-right: 300px;
-          margin-top:15px;
-        }
-        </style>
-
-    <img src="static/images/demoplot.jpeg", style="width:50%;">
-
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link href="static/css/sidebar.css" rel="stylesheet", type="text/css">
         <link href="static/css/base.css" rel="stylesheet", type="text/css">
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
         <link
           href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700&display=swap"
           rel="stylesheet"
         />
+        <style>
+            .chart{
+                display: block;
+                margin-left: 300px;
+                margin-right: 300px;
+                margin-top: 15px;
+                text-align: center;
+            }
+            </style>
     </head>
 
     <body>
@@ -268,7 +268,13 @@
 
         </ul>
         </nav>
-        <div>{{div|safe}}</div>
-        <script>{{ script|safe }}</script>
+        <div class="chart" id="heatmap">
+            <script>
+                var graphs = {{plot | safe}};
+                Plotly.plot('heatmap',graphs,{});
+            </script>
+        </div>
+
     </body>
+ 
 </html>
