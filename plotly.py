@@ -1,45 +1,79 @@
-# To add a new cell, type '# %%'
-# To add a new markdown cell, type '# %% [markdown]'
-# %%
-# imports
-from bokeh.io import push_notebook, show, output_notebook
+from flask import Flask, render_template, url_for
+from bokeh.io import push_notebook, show, output_notebook,curdoc
 from bokeh.server.server import Server
+from bokeh.embed import components, server_document
 from bokeh.application import Application
 from bokeh.application.handlers.function import FunctionHandler
-from bokeh.layouts import column
-from bokeh.models import Slider
-from bokeh.plotting import figure
-from bokeh.plotting import ColumnDataSource
+from bokeh.layouts import column, layout, row
+from bokeh.models import Slider, Div, CheckboxGroup, MultiSelect, Select, FileInput
+from bokeh.plotting import figure, ColumnDataSource, show, output_file
 
-
-from bokeh.models import CheckboxGroup
-from bokeh.models import MultiSelect
-
-
-from bokeh.models import Select
-
-
-
-from bokeh.models import FileInput
-
-from bokeh.layouts import row
-
+from PIL import Image
+import os
 import numpy as np
 import pandas as pd
 
-from bokeh.plotting import figure, show, output_file
-from PIL import Image
-from bokeh.io.doc import curdoc
-output_file("try.html")
+import datetime
+import plotly.io as pio
+import json
+import plotly
 
+from plotly.offline import download_plotlyjs, plot
+import plotly.graph_objs as go
 
-# %%
-#Making
-#THIS CELL IS THE ACTUAL CODE, THE OTHER CELLS ARE FOR PRACTICE!!!!!!!!
-#Code that is commented out in this cell is old code, it's there as a backup for if all fails
-def make_page(doc):
+app = Flask(__name__)
+
+@app.route("/")
+@app.route("/home")
+def home():
+    return render_template('home.html')
+
+@app.route("/vis")
+def vis():
+
+    df = pd.read_csv("all_fixation_data_cleaned_up.csv", encoding='latin1', sep="\t")
+    image_name = '01_Antwerpen_S1.jpg'
+    image_location = "./static/images/MetroMapsEyeTracking/stimuli/{}".format(image_name)
+    image= Image.open(image_location)
+    img_width, img_height = image.size
+
+    def get_data(df, figure):
+        X = df["MappedFixationPointX"][df["StimuliName"] == figure].unique().tolist()
+        Y = (img_height - df["MappedFixationPointY"][df["StimuliName"] == figure]).unique().tolist()
+        Z = df["FixationDuration"][df["StimuliName"] == figure].unique().tolist()
+
+        dict_of_fig = dict({
+            "data": [{"type": "histogram2dcontour",
+                    "x": X,
+                    "y": Y,
+                    "z": Z,
+                    "hovertemplate": "Fixation Duration (ms): %{z}",
+                    "histfunc": "min",
+                    "histnorm": "probability"}],
+            "layout": {"title": {"text": "Histogram 2D Contour"}}
+        })
+    
+        return dict_of_fig
+
+    def create_plot(dictionary, df):
+        
+        fig = go.Figure(dictionary)
+        
+        graphJSON = json.dumps(plot, cls=plotly.utils.PlotlyJSONEncoder)
+        return graphJSON
+        
+    source = get_data(df, image_name)
+    plot = create_plot(source, df)
+    return render_template('vis.html', plot=plot)
+
+@app.route("/about")
+def about():
+
+    #Making
+    #THIS CELL IS THE ACTUAL CODE, THE OTHER CELLS ARE FOR PRACTICE!!!!!!!!
+    #Code that is commented out in this cell is old code, it's there as a backup for if all fails
     image_name="01_Antwerpen_S1.jpg"
-    image_location = ".\static\images\MetroMapsEyeTracking\stimuli\{}".format(image_name)
+    image_location = "./static/images/MetroMapsEyeTracking/stimuli/{}".format(image_name)
     image= Image.open(image_location) #Opens the image location using the Image library
     image_width, image_height = image.size #image.size is width, height
     
@@ -165,7 +199,7 @@ def make_page(doc):
             
             #Get the first image from the list to already show a map for the plot
             image_name = dataframe["StimuliName"][0] 
-            image_location = "./stimuli/{}".format(image_name)
+            image_location = "./static/images/MetroMapsEyeTracking/stimuli/{}".format(image_name)
             image= Image.open(image_location)
             image_width, image_height = image.size
             
@@ -209,10 +243,16 @@ def make_page(doc):
     #Code for the user selection
     user_list = userListMaker(df, image_name)
     user_select = MultiSelect(title="Users:", value=["Everyone"],
-                           options=user_list ) #Don't forget to press shift or control (shift for everyone in between, control for selecting specific people) when selecting multiple users
+                        options=user_list ) #Don't forget to press shift or control (shift for everyone in between, control for selecting specific people) when selecting multiple users
     user_select.on_change("value", update_plot_user)
     
     scatterplot = make_plot(Tools_vis1, source)
     controls = column(File_Input, stimuliSelect, user_select)
     layout = row(scatterplot, controls)
-    doc.add_root(layout)
+    #doc.add_root(layout)
+    script, div = components(layout, wrap_script=False)
+    return render_template('about.html', script=script, div=div)
+    #return render_template('about.html')
+
+if __name__ == '__main__':
+    app.run(debug=True, threaded=True, port=5000)
