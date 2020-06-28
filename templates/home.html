@@ -1,12 +1,75 @@
 {% extends "base.html" %}
 
-<hmtl>
+{% block title %} DBL Home {% endblock title %}
 
-    <title>DBL home</title>
 
-    {% block navbar_home_button %}
-    {% endblock navbar_home_button %}
 
-</hmtl>
+{% block homepagelogo %}
+<div class="homepagelogo"></div>
+    <div>
+      <hr>
+    </div>
+    
+    <div class="logo">
+      <style>
+          .homepage-logo{
+              position: relative;
+              margin-left: 10%;
+              padding-top: 1%;
+          }      
+      </style>
+      <img src="/static/images/homepage_logo.jpg" alt="Center" 
+      style="border-radius: 49%; display: inline-block; margin:0 5px; width: 30%; margin-left: 545px;"/>
+    </div>
+    
+    <div>
+      <hr>
+    </div>
+{% endblock homepagelogo %}
+
+{% block imageslider %}
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" 
+  integrity="sha384-lKuwvrZot6UHsBSfcMv0kWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+  <script src="https://use.fontawesome.com/8573420359.js"></script>
+  <link rel="stylesheet" href="/static/css/home.css">
+
+</head>
+
+<div class="carousel-container">
+  <button  id="prevBtn">
+    <svg id="prevBtn" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="arrow-left" class="svg-inline--fa fa-arrow-left fa-w-14" role="img" xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 448 512">
+      <path fill="currentColor" 
+    d="M257.5 445.1l-22.2 22.2c-9.4 9.4-24.6 9.4-33.9 0L7 273c-9.4-9.4-9.4-24.6 0-33.9L201.4 44.7c9.4-9.4 24.6-9.4 33.9 0l22.2 22.2c9.5 9.5 9.3 25-.4 34.3L136.6 216H424c13.3 0 24 10.7 24 24v32c0 13.3-10.7 24-24 24H136.6l120.5 114.8c9.8 9.3 10 24.8.4 34.3z"></path></svg>
+  
+  </button>
+  <button  id="nextBtn">
+    <svg id="nextBtn" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="arrow-right" class="svg-inline--fa fa-arrow-right fa-w-14" role="img" xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 448 512">
+      <path  d="M190.5 66.9l22.2-22.2c9.4-9.4 24.6-9.4 33.9 0L441 239c9.4 9.4 9.4 24.6 0 33.9L246.6 467.3c-9.4 9.4-24.6 9.4-33.9 
+      0l-22.2-22.2c-9.5-9.5-9.3-25 .4-34.3L311.4 296H24c-13.3 0-24-10.7-24-24v-32c0-13.3 10.7-24 24-24h287.4L190.9 
+      101.2c-9.8-9.3-10-24.8-.4-34.3z"/>  
+    </svg>
+  </button>
+  <div class="carousel-slide">
+    <img src="/static/images/demoplot.jpeg" id="lastClone" alt="">
+    <img src="/static/images/demoplot.jpeg" alt="">
+    <img src="/static/images/demoplot.jpeg" alt="">
+    <img src="/static/images/demoplot.jpeg" alt="">
+    <img src="/static/images/demoplot.jpeg" alt="">
+    <img src="/static/images/demoplot.jpeg" id="firstClone" alt="">
+  </div>
+</div>
+
+
+
+
+<script src="/static/java/app.js"></script>
+
+{% endblock imageslider %}
 
 
