@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request
+from flask import Flask, render_template, url_for, request, session
 from bokeh.io import push_notebook, show, output_notebook,curdoc
 from bokeh.server.server import Server
 from bokeh.embed import components, server_document
@@ -23,7 +23,7 @@ from bokeh.transform import dodge
 
 
 app = Flask(__name__)
-
+app.secret_key="DIVISUALS"
 
 @app.route("/")
 @app.route("/home")
@@ -456,9 +456,17 @@ def about():
     #The Gaze stripe plot has been made with the help of the following link: https://stackoverflow.com/questions/61908232/python-image-multiple-crops-with-pillow-and-grouped-and-displayed-in-a-row-with
     
     #Collecting the .csv file name from the POST method. If nothing has been posted yet, just take the example dataframe
-    file_name="all_fixation_data_cleaned_up.csv"
-    user_list=["Everyone"]
-    image_name=""
+
+    #KEEP IN MIND, IF THE FILE SELECTIO IS ON A DIFFERENT PAGE THEN MAKE SURE TO ADJUST THE CODE FOR SESSIONS SUCH THAT THE FIRST SESSION IS TERMINATED
+    if "file_name" in session:
+        file_name=session["file_name"]
+        image_name=session["image_name"]
+        user_list=session["user_list"]
+    else:
+        file_name="all_fixation_data_cleaned_up.csv" #Now it's fixed, later (via session) we will determine wether an example dataset is used or an already selected dataset
+        user_list=["Everyone"]
+        image_name=""
+
     def userListMaker(dataframe, stimuli):
         user_series = dataframe["user"][dataframe["StimuliName"] == stimuli].unique().copy()
         userlist=[]
@@ -474,22 +482,19 @@ def about():
             menu.append({"name": i})
         return menu
     
-
-    #MAKE THIS BETTER AS IT STILL HAS A FEW BUGS :\
-    #FIX user select and stimuli select at the same time, just make sure everything is logical and can't give errors in any way
     if request.method == "POST":
         file = request.files["FileSelect"]
         if file.filename == '':
             print("No file to be found, We'll use the example dataset")
-            if request.form.getlist("user_select") != []:
+            if  "Everyone" not in request.form.getlist("user_select"):
                 user_list = request.form.getlist("user_select")
-            if request.form.get("stimuli_select") != "":
-                image_name = request.form.get("stimuli_select")
-                print(image_name)
+                session["user_list"] = user_list
+            image_name = request.form.get("stimuli_select")
+            session["image_name"]= image_name
         else:
-            print(file.filename)
             file_name=file.filename
-        print(user_list)
+            session["file_name"] =file_name
+
 
     
 
@@ -560,7 +565,7 @@ def about():
 
     script, div = components(layout, wrap_script=False)
 
-    return render_template('about.html', script=script, div=div, userdata= userListMaker(df, image_name), stimulidata=stimuliListMaker(df))
+    return render_template('about.html', script=script, div=div, userdata= userListMaker(df, image_name), stimulidata=stimuliListMaker(df), activeusersdata=user_list, activestimulidata=[image_name])
     #return render_template('about.html')
 
 if __name__ == '__main__':
