@@ -486,14 +486,16 @@ def about():
         file = request.files["FileSelect"]
         if file.filename == '':
             print("No file to be found, We'll use the example dataset")
-            if  "Everyone" not in request.form.getlist("user_select"):
-                user_list = request.form.getlist("user_select")
-                session["user_list"] = user_list
+            # if  "Everyone" not in request.form.getlist("user_select"):
+            user_list = request.form.getlist("user_select")
+            session["user_list"] = user_list
             image_name = request.form.get("stimuli_select")
             session["image_name"]= image_name
         else:
             file_name=file.filename
+
             session["file_name"] =file_name
+
 
 
     
@@ -515,12 +517,14 @@ def about():
 
     image_location = './static/images/MetroMapsEyeTracking/stimuli/{}'.format(image_name)
     #Get the X and Y coordinates of the points where people looked at and put them in a list
+    
     coordinates = list(df_stimuli[['MappedFixationPointX', 'MappedFixationPointY']].itertuples(index=False, name=None))
     picture_size = 100 #Can be any value, I liked this one. (Maybe make a potential slider for size?)
 
     #Open the image and convert is to an image with RedGreenBlueAlpha as it's color scheme
     image = Image.open(image_location).convert('RGBA')
     images = [] #Here will all cropped images be appended to.
+    
     for x, y in coordinates:
         box = (x - picture_size / 2, y - picture_size / 2, x + picture_size / 2, y + picture_size / 2) #Takes a certain part of the image in accordance with the coordinate given and size of the "box" it makes. Keep in mind this line isn't an actual image but more like a placeholder
         images.append(np.array(image.crop(box)).view(np.uint32)[::-1]) #Append the part of the image into the images list.
