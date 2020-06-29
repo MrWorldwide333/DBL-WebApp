@@ -106,15 +106,10 @@ body {
   }
 
 
-.about-container {
-
-opacity: 1.0;
-
-
-}
 .about-container a{
 
     padding: 10px;
+    text-align: center;
 
 }
 
