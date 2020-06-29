@@ -1,8 +1,8 @@
 :root {
     font-size: 16px;
     font-family: 'Open Sans';
-    --text-primary: white;
-    --text-secondary: yellow;
+    --text-primary: #d8c4bd;
+    --text-secondary: #d8c4bd;
     --bg-primary: #23232e;
     --bg-secondary: #141418;
     --transition-speed: 600ms;
@@ -96,11 +96,11 @@
   }
   
   .fa-primary {
-    color: #ff7eee; 
+    color: #61bebd; 
   }
   
   .fa-secondary {
-    color: #df49a6;
+    color: #61bebd;
   }
   
   .fa-primary,

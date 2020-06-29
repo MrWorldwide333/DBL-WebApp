@@ -1,12 +1,45 @@
 {% extends "base.html" %}
-
+{% block content %}
 <hmtl>
 
-    <title>DBL home</title>
 
     {% block navbar_home_button %}
     {% endblock navbar_home_button %}
 
+
+    <title>DBL home</title>
+
+    <body>
+          
+          <div class="w3-container"> 
+            <h2>With a Container</h2>
+            <hr>
+           
+            <hr>
+            
+            
+            <p>The w3-container class is one of the most important W3.CSS classes.</p>
+            <hr>
+            <p>It provides correct margins, padding, alignments, and more, to most HTML elements.</p>
+            <hr>
+          </div>
+        <div class="homepage-logo" href="#"><img style=" width: 30%;" src="/static/images/homepage_logo.jpg" alt="Logo"></div>  
+        <style>
+        .homepage-logo img{
+        border-radius: 50%;
+        display: inline-block;
+        margin:0 5px
+        
+        }
+        .homepage-logo{
+            text-align: center
+        }
+
+        </style>
+</body>
+
+  
 </hmtl>
+{% endblock content %} 
 
 
