@@ -5,7 +5,8 @@
 }
 
 .carousel-container{
-    width: 60%;
+    width: 52%;
+    height: 500px;
     margin: auto; 
     border: 5px solid black;
     overflow: hidden;   
@@ -14,7 +15,7 @@
 
 .carousel-slide{
     display: flex;
-    width: 100%;
+    width: 275px;
     height: 500px;
 }
 
