@@ -41,33 +41,74 @@ def vis():
     series_users = pd.Series(user_list)
 
     #Creates a dictionary to get the data of a specific stimuli
-    def get_data(df, figure):
+    def get_data(df, figure, users):
         X = df["MappedFixationPointX"][df["StimuliName"] == figure].unique().tolist()
         Y = (img_height - df["MappedFixationPointY"][df["StimuliName"] == figure]).unique().tolist()
         Z = df["FixationDuration"][df["StimuliName"] == figure].unique().tolist()
+        # User = df["user"][df["StimuliName"] == figure].unique().tolist()
+        tooltips = "X: %{x}" + "Y: %{y}" + "Fixation Duration (ms): %{z}"
+
+        # if users[0] == 'Everyone':
+        #     X = df["MappedFixationPointX"][df["StimuliName"] == figure].unique().tolist()
+        #     Y = (img_height - df["MappedFixationPointY"][df["StimuliName"] == figure]).unique().tolist()
+        #     Z = df["FixationDuration"][df["StimuliName"] == figure].unique().tolist()
+        #     User = df["user"][df["StimuliName"] == figure].unique().tolist()
+        #     tooltips = "X: %{x}" + "Y: %{y}" + "Fixation Duration (ms): %{z}"
+
+        # else:
+
+        # for i in range(1, len(users)):
+        #     X1 = df["MappedFixationPointX"][(df["StimuliName"] == figure) & (df["user"] == users[0])].unique()
+        #     Y1 = (img_height - df["MappedFixationPointY"][(df["StimuliName"] == figure) & (df["user"] == users[0])]).unique()
+        #     Z1 = df["FixationDuration"][(df["StimuliName"] == figure) & (df["user"] == users[0])].unique()
+        #     # User1 = df["user"][(df["StimuliName"] == figure) & (df["user"] == users[0])].unique()
+        #     tooltips = "X: %{x}" + "Y: %{y}" + "Fixation Duration (ms): %{z}"
+
+        #     X = X.append(X1)
+        #     Y = Y.append(Y1)
+        #     Z = Z.append(Z1)
+            # User = User.append(User1)
 
         dict_of_fig = dict({
+                    "visible": False,
                     "x": X,
                     "y": Y,
                     "z": Z,
-                    "hovertemplate": "Fixation Duration (ms): %{z}",
+                    "hovertemplate": "X: %{x}<br>" + "Y: %{y}<br>" + "Fixation Duration (ms): %{z}<br>" + "User: %{user}<br>",
                     "line": {"smoothing": 1.3},
                     "contours": {"showlines": False},
                     "ncontours": 30})
-    
+        
         return dict_of_fig
 
     #Creates the plot
-    def create_plot(df):
+    def create_plot(df, addNone = True):
         #empty plot
         fig = go.Figure()
 
         #Loops through all the stimuli and adds a trace to the empty plot for every single one
         for image in df["StimuliName"].unique().tolist():
-            source = get_data(df, image)
+            source = get_data(df, image, user_list)
             fig.add_trace(
-                go.Histogram2dContour(source)
+                go.Histogram2dContour(source, name=image)
             )
+
+        fig.update_layout(
+            autosize=True,
+            # width=1200,
+            # height=600,
+            hovermode="closest",
+            hoverdistance=-1,
+            legend=dict(orientation='h'),
+            xaxis=dict(autorange=True, range=[0, img_width], showgrid=False),
+            yaxis=dict(autorange=True, range=[0, img_height], showgrid=False)
+        )
+
+        button_none = dict(label='None',
+                            method = 'update',
+                            args = [{'visible': False,
+                                    'title': 'None',
+                                    'showlegend': True}])
 
         def create_stimuli_dropdown(image):
             return dict(label = image,
@@ -79,11 +120,11 @@ def vis():
         fig.update_layout(
             updatemenus=[dict(
                 active = 0,
-                buttons = list(series_stimuli.map(lambda image: create_stimuli_dropdown(image))),
+                buttons = ([button_none] * addNone) + list(series_stimuli.map(lambda image: create_stimuli_dropdown(image))),
                 direction="down",
                 pad={"r": 10, "t": 10},
                 showactive=True,
-                x=0.1,
+                x=0.07,
                 xanchor="left",
                 y=1.25,
                 yanchor="top"
@@ -119,7 +160,7 @@ def vis():
                     direction="down",
                     pad={"r":10, "t":10},
                     showactive=True,
-                    x=0.45,
+                    x=0.42,
                     xanchor="left",
                     y=1.25,
                     yanchor="top"
@@ -155,7 +196,7 @@ def vis():
                     direction="down",
                     pad={"r":10, "t":10},
                     showactive=True,
-                    x=0.80,
+                    x=0.64,
                     xanchor="left",
                     y=1.25,
                     yanchor="top"
@@ -163,10 +204,16 @@ def vis():
 
         ])
 
+        #Adding annotations for the buttons
         fig.update_layout(
-            autosize=True,
-            xaxis=dict(range=[0, img_width]),
-            yaxis=dict(range=[0, img_height])
+            annotations=[
+                dict(text='Stimuli:', showarrow=False,
+                x=0, xref="paper", y=1.185, yref="paper", align="left"),
+                dict(text='Function:', showarrow=False,
+                x=0.37, xref="paper", y=1.185, yref="paper"),
+                dict(text='Norm:', showarrow=False,
+                x=0.6, xref="paper", y=1.185, yref="paper")
+            ]
         )
 
         graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
