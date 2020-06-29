@@ -458,14 +458,14 @@ def about():
     #Collecting the .csv file name from the POST method. If nothing has been posted yet, just take the example dataframe
 
     #KEEP IN MIND, IF THE FILE SELECTIO IS ON A DIFFERENT PAGE THEN MAKE SURE TO ADJUST THE CODE FOR SESSIONS SUCH THAT THE FIRST SESSION IS TERMINATED
-    if "file_name" in session:
-        file_name=session["file_name"]
-        image_name=session["image_name"]
-        user_list=session["user_list"]
-    else:
-        file_name="all_fixation_data_cleaned_up.csv" #Now it's fixed, later (via session) we will determine wether an example dataset is used or an already selected dataset
-        user_list=["Everyone"]
-        image_name=""
+    if "file_name" in session: file_name=session["file_name"]
+    else: file_name="all_fixation_data_cleaned_up.csv" #Now it's fixed, later (via session) we will determine wether an example dataset is used or an already selected dataset
+    
+    if "image_name" in session: image_name=session["image_name"]
+    else: image_name=""
+    
+    if "user_list" in session: user_list=session["user_list"]
+    else: user_list=["Everyone"]
 
     def userListMaker(dataframe, stimuli):
         user_series = dataframe["user"][dataframe["StimuliName"] == stimuli].unique().copy()
