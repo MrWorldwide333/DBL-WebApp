@@ -13,6 +13,27 @@ import os
 import numpy as np
 import pandas as pd
 
+import numpy as np
+import pandas as pd
+from math import pi
+
+import os
+from os.path import dirname, join
+from scipy.signal import savgol_filter
+
+
+from flask import Flask, render_template, request, Response, send_from_directory
+from bokeh.embed import components
+from bokeh.plotting import figure, output_file, show, save, output_notebook, ColumnDataSource
+from bokeh.resources import INLINE
+from bokeh.palettes import Spectral4
+from bokeh.layouts import column, row
+from bokeh.transform import factor_cmap
+from bokeh.models import OpenURL, CustomJS, TapTool, Select, FileInput
+from bokeh.models.tools import HoverTool
+from bokeh.models.widgets import Tabs, Panel
+from bokeh.transform import dodge
+
 app = Flask(__name__)
 
 
@@ -23,19 +44,112 @@ def home():
 
 @app.route("/vis")
 def vis():
+    NameFile="All_fixation_data_cleaned_up.csv"
+    df = pd.read_csv(NameFile, encoding = 'latin1', sep= '\t')
+    
+    orientation_xaxis=(6*pi/10) 
+    
+    df_sum= df[['StimuliName', 'description', 'user', 'FixationDuration']].groupby(['StimuliName', 'description', 'user'], as_index=False).sum()
+    df_max= df[['StimuliName', 'description', 'user', 'FixationDuration']].groupby(['StimuliName', 'description', 'user'], as_index=False).max()
+    df_mean= df[['StimuliName', 'description', 'user', 'FixationDuration']].groupby(['StimuliName', 'description', 'user'], as_index=False).mean()
+    
+    source_sum= ColumnDataSource(df_sum)
+    source_max= ColumnDataSource(df_max)
+    source_mean= ColumnDataSource(df_mean)
+    
+    Stimuli_list= df['StimuliName'].unique()
+    Description_list= df['description'].unique()
+    
+    ToolBox= ['box_select', 'tap', 'pan', 'zoom_in', 'zoom_out', 'wheel_zoom', 'save', 'reset']
+    ColorPalette= ['#20639B', '#3CAEA3', '#F6D55C', '#ED553B']
+    
+    
+    #The creation of the plot, with the containing set of widgets
+    plot_sum= figure(
+        plot_height = 800, 
+        plot_width= 1000,
+        title = "Summation of Fixation Duration per Stimuli and User",
+        x_range = Stimuli_list,
+        y_axis_label= 'Fixation duration (sec)',
+        tools = ToolBox )
+    plot_sum.xaxis.major_label_orientation = orientation_xaxis
+    
+    
+    plot_max= figure(
+        plot_height = 800, 
+        plot_width= 1000,
+        title = "Maximum of Fixation Duration per Stimuli and User",
+        x_range = Stimuli_list,
+        y_axis_label= 'Fixation duration (sec)',
+        tools = ToolBox )
+    plot_max.xaxis.major_label_orientation = orientation_xaxis
+    
+    
+    plot_mean= figure(
+        plot_height = 800, 
+        plot_width= 1000,
+        title = "Mean of Fixation Duration per Stimuli and User",
+        x_range = Stimuli_list,
+        y_axis_label= 'Fixation duration (sec)',
+        tools = ToolBox )
+    plot_mean.xaxis.major_label_orientation = orientation_xaxis
+    
+    plot_sum.vbar(
+        x="StimuliName",
+        top= 'FixationDuration',
+        width= 0.4,
+        fill_color= factor_cmap('description', palette = ColorPalette, factors= Description_list),
+        fill_alpha= 0.6,
+        source= source_sum,
+        selection_color= '#20639B',
+        selection_alpha= 0.6,
+        legend_field= 'description')
 
-    fruits = ['Apples', 'Pears', 'Nectarines', 'Plums', 'Grapes', 'Strawberries']
-    counts = [5, 3, 4, 2, 4, 6]
+    plot_sum.legend.orientation = 'vertical'
+    plot_sum.legend.location= 'top_right'
+    plot_sum.toolbar.autohide = True
+    tab_sum = Panel(child= plot_sum, title= 'Summation')
+    
+    
+    plot_max.vbar(
+        x="StimuliName",
+        top= 'FixationDuration',
+        width= 0.4,
+        fill_color= factor_cmap('description', palette = ColorPalette, factors= Description_list),
+        fill_alpha= 0.8,
+        source= source_max,
+        selection_color= '#F6D55C',
+        selection_alpha= 0.6,
+        legend_field= 'description')
 
-    p = figure(x_range=fruits, plot_height=250, title="Fruit Counts",
-           toolbar_location=None, tools="")
-
-    p.vbar(x=fruits, top=counts, width=0.9)
-
-    p.xgrid.grid_line_color = None
-    p.y_range.start = 0
-
-    script, div = components(p, wrap_script=False)
+    plot_max.legend.orientation = 'vertical'
+    plot_max.legend.location= 'top_right'
+    plot_max.toolbar.autohide = True
+    tab_max = Panel(child= plot_max, title= 'Max') 
+    
+    
+    plot_mean.vbar( 
+        x="StimuliName",
+        top= 'FixationDuration',
+        width= 0.4,
+        fill_color= factor_cmap('description', palette = ColorPalette, factors= Description_list),
+        fill_alpha= 1.0,
+        source= source_mean,
+        selection_color= '#ED553B',
+        selection_alpha= 0.6,
+        legend_field= 'description')
+    
+    plot_mean.legend.orientation = 'vertical'
+    plot_mean.legend.location= 'top_right'
+    plot_mean.toolbar.autohide = True
+    tab_mean = Panel(child= plot_mean, title= 'Mean')
+    
+    
+    Taptools= plot_sum.select(type = TapTool)
+    #url = '/barchart.html'
+    #Taptools.callback= OpenURL (url = url)
+    Tabben = Tabs(tabs= [tab_sum, tab_max, tab_mean])
+    script, div = components(Tabben, wrap_script=False)
     return render_template('vis.html', script=script, div=div)
 
 
