@@ -268,6 +268,13 @@
 
         </ul>
         </nav>
+        <div>
+        <form action="#" method="POST" enctype="multipart/form-data">
+            <input type="file" name="FileSelect" id="FileSelect" >
+            <button type="submit">Choose File(s)</button>
+            <span ></span>
+        </form>
+    </div>
         <div class="chart" id="heatmap">
             <script>
                 var graphs = {{plot | safe}};

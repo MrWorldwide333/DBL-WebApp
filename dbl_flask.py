@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for
+from flask import Flask, render_template, url_for, request
 from bokeh.io import push_notebook, show, output_notebook,curdoc
 from bokeh.server.server import Server
 from bokeh.embed import components, server_document
@@ -28,25 +28,38 @@ app = Flask(__name__)
 def home():
     return render_template('home.html')
 
-@app.route("/vis")
+@app.route("/vis", methods=["POST", "GET"])
 def vis():
-    df = pd.read_csv("all_fixation_data_cleaned_up.csv", encoding='latin1', sep="\t")
+    #Selects either the standard data or the submitted data
+    file_name="all_fixation_data_cleaned_up.csv"
+    if request.method == "POST":
+        file = request.files["FileSelect"]
+        if file.filename == '':
+            print("No file to be found, We'll use the example dataset")
+        else:
+            print(file.filename)
+            file_name=file.filename
+
+    #Generates the data necessary for the images
     image_name = '01_Antwerpen_S1.jpg'
     image_location = "./static/images/MetroMapsEyeTracking/stimuli/{}".format(image_name)
     image= Image.open(image_location)
     img_width, img_height = image.size
+
+    #Generates the data needed for the plot by using a pandas dataframe
+    eyetracking_data = pd.read_csv(file_name, encoding='latin1', sep="\t")
+    df = eyetracking_data.copy()
     stimuli_list = df["StimuliName"].unique()
-    user_list = df["user"].unique()
+    # user_list = df["user"].unique()
     series_stimuli = pd.Series(stimuli_list)
-    series_users = pd.Series(user_list)
+    # series_users = pd.Series(user_list)
 
     #Creates a dictionary to get the data of a specific stimuli
-    def get_data(df, figure, users):
+    def get_data(df, figure):
         X = df["MappedFixationPointX"][df["StimuliName"] == figure].unique().tolist()
         Y = (img_height - df["MappedFixationPointY"][df["StimuliName"] == figure]).unique().tolist()
         Z = df["FixationDuration"][df["StimuliName"] == figure].unique().tolist()
         # User = df["user"][df["StimuliName"] == figure].unique().tolist()
-        tooltips = "X: %{x}" + "Y: %{y}" + "Fixation Duration (ms): %{z}"
 
         # if users[0] == 'Everyone':
         #     X = df["MappedFixationPointX"][df["StimuliName"] == figure].unique().tolist()
@@ -58,22 +71,23 @@ def vis():
         # else:
 
         # for i in range(1, len(users)):
-        #     X1 = df["MappedFixationPointX"][(df["StimuliName"] == figure) & (df["user"] == users[0])].unique()
-        #     Y1 = (img_height - df["MappedFixationPointY"][(df["StimuliName"] == figure) & (df["user"] == users[0])]).unique()
-        #     Z1 = df["FixationDuration"][(df["StimuliName"] == figure) & (df["user"] == users[0])].unique()
+        #     X1 = df["MappedFixationPointX"][(df["StimuliName"] == figure) & (df["user"] == users[i])]
+        #     Y1 = (img_height - df["MappedFixationPointY"][(df["StimuliName"] == figure) & (df["user"] == users[i])])
+        #     Z1 = df["FixationDuration"][(df["StimuliName"] == figure) & (df["user"] == users[i])]
         #     # User1 = df["user"][(df["StimuliName"] == figure) & (df["user"] == users[0])].unique()
         #     tooltips = "X: %{x}" + "Y: %{y}" + "Fixation Duration (ms): %{z}"
 
         #     X = X.append(X1)
         #     Y = Y.append(Y1)
         #     Z = Z.append(Z1)
-            # User = User.append(User1)
+        #     # User = User.append(User1)
 
         dict_of_fig = dict({
                     "visible": False,
                     "x": X,
                     "y": Y,
                     "z": Z,
+                    # "colorbar": {},
                     "hovertemplate": "X: %{x}<br>" + "Y: %{y}<br>" + "Fixation Duration (ms): %{z}<br>" + "User: %{user}<br>",
                     "line": {"smoothing": 1.3},
                     "contours": {"showlines": False},
@@ -86,41 +100,57 @@ def vis():
         #empty plot
         fig = go.Figure()
 
-        #Loops through all the stimuli and adds a trace to the empty plot for every single one
-        for image in df["StimuliName"].unique().tolist():
-            source = get_data(df, image, user_list)
+        # Loops through all the stimuli and adds a trace to the empty plot for every single one
+        for stimulus in df["StimuliName"].unique().tolist():
+            source = get_data(df, stimulus)
             fig.add_trace(
-                go.Histogram2dContour(source, name=image)
+                go.Histogram2dContour(source, name=stimulus)
             )
 
+        # for u in df["user"].tolist():
+        #     source = get_data(df, image, user_list)
+        #     fig.add_trace(
+        #         go.Histogram2dContour(source, name=u)
+        #     )
+
+        #Configures the layout including sizes and legend of the plot
         fig.update_layout(
             autosize=True,
             # width=1200,
             # height=600,
             hovermode="closest",
             hoverdistance=-1,
-            legend=dict(orientation='h'),
-            xaxis=dict(autorange=True, range=[0, img_width], showgrid=False),
-            yaxis=dict(autorange=True, range=[0, img_height], showgrid=False)
+            legend=dict(orientation='h', itemsizing='trace'),
+            xaxis=dict(autorange=True, title=dict(text="Mapped Fixation Point X (pixels)"), showgrid=False),
+            yaxis=dict(autorange=True, title=dict(text="Mapped Fixation Point Y (pixels)"), showgrid=False)
         )
 
+        #Creates a button that will make all generated plots invisible
         button_none = dict(label='None',
                             method = 'update',
                             args = [{'visible': False,
                                     'title': 'None',
                                     'showlegend': True}])
 
-        def create_stimuli_dropdown(image):
-            return dict(label = image,
+        #Method that creates a button option for every stimuli
+        def create_stimuli_dropdown(stimulus):
+            return dict(label = stimulus,
                         method = 'update',
-                        args = [{'visible': stimuli_list == image,
-                                'title': image,
+                        args = [{'visible': stimuli_list == stimulus,
+                                'title': stimulus,
                                 'showlegend': True}])
+
+        # def create_user_dropdown(u):
+        #     return dict(label = u,
+        #                 method = 'update',
+        #                 args = [{'visible': user_list == u,
+        #                         'title': u,
+        #                         'showlegend': True}])
 
         fig.update_layout(
             updatemenus=[dict(
                 active = 0,
-                buttons = ([button_none] * addNone) + list(series_stimuli.map(lambda image: create_stimuli_dropdown(image))),
+                buttons = ([button_none] * addNone) + list(series_stimuli.map(lambda stimulus: create_stimuli_dropdown(stimulus))),
                 direction="down",
                 pad={"r": 10, "t": 10},
                 showactive=True,
@@ -210,9 +240,9 @@ def vis():
                 dict(text='Stimuli:', showarrow=False,
                 x=0, xref="paper", y=1.185, yref="paper", align="left"),
                 dict(text='Function:', showarrow=False,
-                x=0.37, xref="paper", y=1.185, yref="paper"),
+                x=0.375, xref="paper", y=1.185, yref="paper"),
                 dict(text='Norm:', showarrow=False,
-                x=0.6, xref="paper", y=1.185, yref="paper")
+                x=0.605, xref="paper", y=1.185, yref="paper")
             ]
         )
 
