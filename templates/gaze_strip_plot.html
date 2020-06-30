@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block homepagelogo %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <script src="http://cdn.pydata.org/bokeh/release/bokeh-2.0.2.min.js"></script>
+        <script src="http://cdn.pydata.org/bokeh/release/bokeh-widgets-2.0.2.min.js"></script>
+    </head>
+    <body>
+        <div> 
+        <form action="#" method="POST" enctype="multipart/form-data">
+            <input type="file" name="FileSelect" id="FileSelect" value="All_fixation_data_cleaned_up">
+            <select name="user_select" multiple>
+                {% for u in userdata %}
+                    {% if u.name in activeusersdata %}
+                    <option value="{{ u.name }}" selected>{{ u.name }}</option>
+                    {% else %}
+                    <option value="{{ u.name }}">{{ u.name }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+            <select name="stimuli_select">
+                {% for s in stimulidata %}
+                {% if s.name in activestimulidata %}
+                    <option value="{{ s.name }}" selected>{{ s.name }}</option>
+                {% else %}
+                    <option value="{{ s.name }}">{{ s.name }}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+            <button type="submit">Select</button>
+            <span ></span>
+        </form>
+        </div>
+        <div> 
+        {{ div | safe}}
+        <script>{{script|safe}}</script>
+        </div>
+    </body>
+</html>
+{% endblock homepagelogo %}

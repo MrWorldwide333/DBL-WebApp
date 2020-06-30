@@ -1,12 +1,59 @@
 {% extends "base.html" %}
+{% block title %} DBL home {% endblock title %}
+{% block homepagelogo %}
+<div class="homepagelogo"></div>
+    <div>
+      <hr>
+    </div>
 
-<hmtl>
+    <div class="logo">
+      <style>
+          .homepage-logo{
+              position: relative;
+              margin-left: 10%;
+              padding-top: 1%;
+          }      
+      </style>
+      <img src="/static/images/homepage_logo.jpg" alt="Center" 
+      style="border-radius: 49%; display: inline-block; margin:0 5px; width: 30%; margin-left: 545px;"/>
+    </div>
 
-    <title>DBL home</title>
+    <div>
+      <hr>
+    </div>
+{% endblock homepagelogo %}
 
-    {% block navbar_home_button %}
-    {% endblock navbar_home_button %}
+{% block imageslider %}
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="https://use.fontawesome.com/8573420359.js"></script>
+  <link rel="stylesheet" href="/static/css/home.css">
 
-</hmtl>
+</head>
+
+<div class="carousel-container">
+  <button  id="prevBtn" class="prew fa fa-chevron-left">
+  </button>
+  <button  id="nextBtn" class="prew fa fa-chevron-right"> 
+  </button>
+  <div class="carousel-slide">
+    <img src="/static/images/demoplot.jpeg" id="lastClone" alt="">
+    <img src="/static/images/demoplot.jpeg" alt="">
+    <img src="/static/images/demoplot.jpeg" alt="">
+    <img src="/static/images/demoplot.jpeg" alt="">
+    <img src="/static/images/demoplot.jpeg" alt="">
+    <img src="/static/images/demoplot.jpeg" id="firstClone" alt="">
+  </div>
+</div>
+
+
+
+
+<script src="/static/java/app.js"></script>
+
+{% endblock imageslider %}
 
 
