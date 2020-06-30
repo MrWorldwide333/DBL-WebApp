@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for
+from flask import Flask, render_template, url_for, request, session
 from bokeh.io import push_notebook, show, output_notebook,curdoc
 from bokeh.server.server import Server
 from bokeh.embed import components, server_document
@@ -35,16 +35,42 @@ from bokeh.models.widgets import Tabs, Panel
 from bokeh.transform import dodge
 
 app = Flask(__name__)
+app.secret_key="DIVISUALS"
+
 
 
 @app.route("/")
-@app.route("/home")
+@app.route("/home", methods=["POST", "GET"])
 def home():
-    return render_template('home.html')
+    CurrentFile="No file has been selected yet, so the example dataset will be used"
+    if "file_name" in session: 
+        file_name=session["file_name"]
+        CurrentFile=file_name
 
-@app.route("/vis")
+    FileText=""
+
+    if request.method == "POST":
+        file = request.files["FileSelect"]
+        if file.filename == '':
+            print("No file to be found, We'll use the example dataset")
+            FileText="The currently selected file is either wrong or failed to send"
+        else:
+            file_name=file.filename
+            session["file_name"] = file_name
+            FileText="Your file {} uploaded succesfully!".format(file_name)
+            CurrentFile=file_name
+
+    return render_template('home.html', curfile=CurrentFile, filetext=FileText)
+
+@app.route("/vis", methods=["POST", "GET"])
 def vis():
-    NameFile="All_fixation_data_cleaned_up.csv"
+    NameFile="all_fixation_data_cleaned_up.csv"
+    if "file_name" in session: NameFile=session["file_name"]
+    else: NameFile="all_fixation_data_cleaned_up.csv" #Now it's fixed, later (via session) we will determine wether an example dataset is used or an already selected dataset
+
+
+
+
     df = pd.read_csv(NameFile, encoding = 'latin1', sep= '\t')
     
     orientation_xaxis=(6*pi/10) 
