@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %} DBL home {% endblock title %}
+{% block homepagelogo %}
+<div class="homepagelogo"></div>
+    <div>
+      <hr>
+    </div>
+
+    <div class="logo">
+      <style>
+          .homepage-logo{
+              position: relative;
+              margin-left: 10%;
+              padding-top: 1%;
+          }      
+      </style>
+      <img src="/static/images/homepage_logo.jpg" alt="Center" 
+      style="border-radius: 49%; display: inline-block; margin:0 5px; width: 30%; margin-left: 545px;"/>
+    </div>
+
+    <div>
+      <hr>
+      <p style="text-align: center;">Welcome, we are group 46, DEVISUALS, and this is our project for the course DBL. You can build your own visualizations by uploading a dataset by pressing the upload button and then head to the visualization page. 
+        We have 5 visualizations to choose from: <a href="/bar">Bar Chart</a>, <a href="/scatterplot">Scatter Plot </a>, <a href="/heatmap">Heat Map</a> and a <a href="/gaze_strip_plot">Gaze Strip Plot</a> 
+        (you can click on these links as well)</p>
+      <hr>
+    </div>
+{% endblock homepagelogo %}
+
+{% block imageslider %}
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="https://use.fontawesome.com/8573420359.js"></script>
+  <link rel="stylesheet" href="/static/css/home.css">
+
+</head>
+
+<div class="carousel-container">
+  <button  id="prevBtn" class="prew fa fa-chevron-left">
+  </button>
+  <button  id="nextBtn" class="prew fa fa-chevron-right"> 
+  </button>
+  <div class="carousel-slide">
+    <img src="/static/images/imageslider/heatmap.jpeg" id="lastClone" alt="">
+    <img src="/static/images/imageslider/heatmap.jpeg" alt="">
+    <img src="/static/images/imageslider/heatmap.jpeg" alt="">
+    <img src="/static/images/demoplot.jpeg" alt="">
+    <img src="/static/images/demoplot.jpeg" alt="">
+    <img src="/static/images/demoplot.jpeg" id="firstClone" alt="">
+  </div>
+</div>
+
+
+
+
+<script src="/static/java/app.js"></script>
+
+{% endblock imageslider %}
+
+

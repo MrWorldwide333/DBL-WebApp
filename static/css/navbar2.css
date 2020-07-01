@@ -1,0 +1,130 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  
+  .navbar {
+    overflow: hidden;
+    background-color: #3d3d3d;
+    background-image: linear-gradient(to right, #3d3d3d , #272727 );
+    transition: 0.4s;
+}
+
+.navbar a {
+    float: left;
+    font-weight: 200;
+    font-size: 16px;
+    color: #d8c4bd;
+    text-align: center;
+    padding: 18px 18px;
+    text-decoration: none;
+    transition: 0.4s;
+    background-color: rgba(255, 255, 255, 0);
+}
+  
+.dropdown {
+    float: left;
+    overflow: hidden;
+}
+  
+.dropdown .dropbtn {
+    font-size: 16px;
+    font-weight: 200;  
+    border: none;
+    outline: none;
+    color: #d8c4bd;
+    padding: 18px 18px;
+    background-color: rgba(255, 255, 255, 0);
+    font-family: inherit;
+    margin: 0;
+    transition: 0.4s;
+}
+  
+.navbar a:hover, .dropdown:hover .dropbtn {
+    background-color: rgba(255, 255, 255, 0.253);    
+}
+  
+.navbar:hover {
+    padding: 10px 10px;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #3d3d3d;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+  
+.dropdown-content a {
+    float: none;
+    color: #d8c4bd;
+    font-weight: 200;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+    background-color: rgba(255, 255, 255, 0);
+    transition: 0.4s;
+}
+  
+.dropdown-content a:hover {
+    background-color: rgba(255, 255, 255, 0.253);
+}
+  
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+
+.navbar-logo {
+    position: absolute;
+    border-radius: 5px;
+    left: 43.5%;
+    float: right;
+    border-style: outset;
+    margin-top: 7px;
+
+
+}
+
+.selfie-L img{
+
+    margin:0 5px;
+    border: #d8c4bd;
+    border-width: 10px;
+
+  }
+
+
+.about-container a{
+
+    padding: 10px;
+    text-align: center;
+
+}
+
+
+.selfie-container {
+
+    padding:16px;
+    border-radius: 5px;
+    transition: 0.8s;
+    height: 450px; 
+    width: 100%; 
+    background-color: #3d3d3d; 
+    text-align: center;
+
+}
+
+.selfie-container:hover {
+
+    background-color: #555555;
+}
+
+.homepage-logo {
+    position: absolute;
+    border-radius: 50%;
+}
+
+

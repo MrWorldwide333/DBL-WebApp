@@ -1,0 +1,58 @@
+<html>
+
+    <title> {% block page_title %}{% endblock page_title %} </title>
+    <head>
+        <link href="static/css/base.css" rel="stylesheet", type="text/css">
+    </head>
+
+    
+
+    <body>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">  
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/navbar2.css') }}">
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        {% block mainnavbar %}
+        <div class="container">
+            <div class="navigation bar">
+                <div class="site-header">
+                    <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
+
+                        <div class="container">
+                            <div class="collapse navbar-collapse" id="navbarToggle">
+                                <div class="navbar-nav mr-auto">
+
+                                    <a href="/home">Home</a>
+                                    <a href="/about">About</a>
+                                    <div class="dropdown">
+                                        <button class="dropbtn">Visualisations 
+                                            <i class="fa fa-caret-down"></i>
+                                        </button>
+
+                                        <div class="dropdown-content">
+                                            <a href="bar" class="nav-link">Bar Chart</a>
+                                            <a href="scatterplot" class="nav-link">Scatter Plot</a>
+                                            <a href="heatmap" class="nav-link">Heatmap</a>
+                                            <a href="gaze_strip_plot" class="nav-link">Gaze Strip Plot</a>
+                                        </div>          
+                                    </div>
+                                    <div class="navbar-logo" href="#"><img style=" width: 200px;" src="/static/images/navbar_logo2.jpg" alt="Logo"></div>            
+                                </div>                        
+                            </div>        
+                        </div>
+                    </nav>  
+                </div>
+            </div>
+        </div>
+        {% endblock mainnavbar %}
+        <div class="content">
+            {% block homepagelogo %}
+            {% endblock homepagelogo %}
+        </div>   
+        <div class="image_slider">
+            {% block imageslider %}
+
+            {% endblock imageslider %}
+        </div>
+    </body>
+</html> 
