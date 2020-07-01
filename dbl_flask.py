@@ -67,21 +67,19 @@ def about():
 
 
     if request.method == "POST":
-            print("No file to be found")
-            # if  "Everyone" not in request.form.getlist("user_select"):
-            user_list = request.form.getlist("user_select")
-            session["user_list"] = user_list
-            image_name = request.form.get("stimuli_select")
-            session["image_name"]= image_name
+        print("No file to be found")
+        # if  "Everyone" not in request.form.getlist("user_select"):
+        user_list = request.form.getlist("user_select")
+        session["user_list"] = user_list
+        image_name = request.form.get("stimuli_select")
+        session["image_name"]= image_name
 
 
     Eyetracking_data = pd.read_csv(file_name, encoding='latin1', sep="\t")
     df = Eyetracking_data.copy()
     df_stimuli = df[df["StimuliName"] == image_name]
     
-    
-
-    if (image_name == "" or (image_name not in df["StimuliName"])):
+    if (image_name == ""):
         image_name=df["StimuliName"][0]
         session['image_name'] = image_name
 
