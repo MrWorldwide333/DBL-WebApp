@@ -6,10 +6,9 @@
   }
 
   body {
-    color: black;
-    background-color: #b4d7c0;
-    margin: 0;
+    color: #d8c4bd;
+    background-color: #3d3d3d;
     padding: 0;
     height: 100vh;
-    background-image: linear-gradient(to bottom, #33ccff 0%, #0082ad 100%);
+    background-image: linear-gradient(to top, #3d3d3d , #272727 );
   }
