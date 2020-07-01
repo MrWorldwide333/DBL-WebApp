@@ -24,9 +24,27 @@ app = Flask(__name__)
 app.secret_key="DIVISUALS"
 
 @app.route("/")
-@app.route("/home")
+@app.route("/home", methods=["POST", "GET"])
 def home():
-    return render_template('home.html')
+    CurrentFile="No file has been selected yet, so the example dataset will be used"
+    if "file_name" in session: 
+        file_name=session["file_name"]
+        CurrentFile=file_name
+
+    FileText=""
+
+    if request.method == "POST":
+        file = request.files["FileSelect"]
+        if file.filename == '':
+            print("No file to be found, We'll use the example dataset")
+            FileText="The currently uploaded file is either the wrong format or failed to send"
+        else:
+            file_name=file.filename
+            session["file_name"] = file_name
+            FileText="Your file {} uploaded succesfully!".format(file_name)
+            CurrentFile=file_name #Needed for the the text that says what file is currently selected
+
+    return render_template('home.html', curfile=CurrentFile, filetext=FileText)
 
 @app.route("/vis")
 def vis():
@@ -49,17 +67,13 @@ def about():
 
 
     if request.method == "POST":
-        file = request.files["FileSelect"]
-        if file.filename == '':
             print("No file to be found")
             # if  "Everyone" not in request.form.getlist("user_select"):
             user_list = request.form.getlist("user_select")
             session["user_list"] = user_list
             image_name = request.form.get("stimuli_select")
             session["image_name"]= image_name
-        else:
-            file_name=file.filename
-            session["file_name"] =file_name
+
 
     Eyetracking_data = pd.read_csv(file_name, encoding='latin1', sep="\t")
     df = Eyetracking_data.copy()
