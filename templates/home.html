@@ -2,25 +2,51 @@
 {% block title %} DBL home {% endblock title %}
 {% block homepagelogo %}
 <div class="homepagelogo"></div>
-    <div>
-      <hr>
-    </div>
+<div>
+  <hr>
+</div>
+<div class="logo">
+  <style>
+    .homepage-logo{
+      position: relative;
+      margin-left: 10%;
+      padding-top: 1%;
+      }      
+  </style>
+  <img src="/static/images/homepage_logo.jpg" alt="Center" 
+  style="border-radius: 49%; display: inline-block; margin:0 5px; width: 30%; margin-left: 545px;"/>
+</div>
 
-    <div class="logo">
-      <style>
-          .homepage-logo{
-              position: relative;
-              margin-left: 10%;
-              padding-top: 1%;
-          }      
-      </style>
-      <img src="/static/images/homepage_logo.jpg" alt="Center" 
-      style="border-radius: 49%; display: inline-block; margin:0 5px; width: 30%; margin-left: 545px;"/>
-    </div>
+<div>
+  <hr>
+  <p style="text-align: center;">Welcome, we are group 46, DEVISUALS, and this is our project for the course DBL. You can build your own visualizations by uploading a dataset by pressing the upload button and then head to the visualization page. 
+    We have 5 visualizations to choose from: <a href="/bar">Bar Chart</a>, <a href="/scatterplot">Scatter Plot </a>, <a href="/heatmap">Heat Map</a> and a <a href="/gaze_strip_plot">Gaze Strip Plot</a> 
+    (you can click on these links as well). At the current state of the webtool it is not possible to select Everyone when using the Gaze Strip Plot, so please keep that in mind. If a memory error occurs while using the Gaze Strip Plot then head back to the Scatter plot and change the previously selected user to another one and try again.
+    Thank you for visiting and hope you enjoy our webtool!
+  </p>
+  <hr>
+</div>
 
-    <div>
-      <hr>
-    </div>
+<!-- This is the file selection -->
+<form action="#" method="POST" enctype="multipart/form-data" class="fileSelect">
+  <input type="file" name="FileSelect" id="FileSelect" value="All_fixation_data_cleaned_up">
+  <button type="submit">Select</button>
+</form>
+<style>
+    .fileSelect{
+        display: block;
+        margin-top: 15px;
+        text-align: center;
+    }
+</style>
+
+{% if filetext != "" %}
+<div>
+    {{ filetext }}
+</div>
+{% endif %}
+Current File: {{ curfile }}
+  
 {% endblock homepagelogo %}
 
 {% block imageslider %}
@@ -33,7 +59,6 @@
   <link rel="stylesheet" href="/static/css/home.css">
 
 </head>
-
 <div class="carousel-container">
   <button  id="prevBtn" class="prew fa fa-chevron-left">
   </button>

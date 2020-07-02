@@ -10,5 +10,16 @@
     background-color: #3d3d3d;
     padding: 0;
     height: 100vh;
-    background-image: linear-gradient(to top, #3d3d3d , #272727 );
+  }
+
+  body::-webkit-scrollbar{
+    width: 0.25rem;
+  }
+
+  body::-webkit-scrollbar-track{
+    background: #3d3d3d;
+  }
+
+  body::-webkit-scrollbar-thumb{
+    background: #7cbebe;
   }

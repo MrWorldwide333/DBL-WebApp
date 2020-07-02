@@ -43,27 +43,29 @@
 
       <div class='file-upload'> 
         <form action="#" method="POST" enctype="multipart/form-data">
-            <input type="file" name="FileSelect" id="FileSelect" >
-            <button type="submit">Choose File(s)</button>
-            <span ></span>
-        </form>
-        <style>
-            .file-upload{
-                display: block;
-              margin-left: 38%;
-              margin-right: center;
-              margin-top: 2%;
-              text-align: center;
-              position: absolute;
-            }
-        </style>
-      </div>
-
-      <div> 
-        {{ div | safe}}
-        <script>{{script|safe}}</script>
-      </div>
-    </body>
+        <select name="user_select" multiple>
+            {% for u in userdata %}
+                {% if u.name in activeusersdata %}
+                  <option value="{{ u.name }}" selected>{{ u.name }}</option>
+                {% else %}
+                  <option value="{{ u.name }}">{{ u.name }}</option>
+                {% endif %}
+            {% endfor %}
+          </select>
+          <select name="stimuli_select">
+            {% for s in stimulidata %}
+              {% if s.name in activestimulidata %}
+                <option value="{{ s.name }}" selected>{{ s.name }}</option>
+              {% else %}
+                <option value="{{ s.name }}">{{ s.name }}</option>
+              {% endif %}
+            {% endfor %}
+          </select>
+          <button type="submit">Choose File(s)</button>
+          <span ></span>
+      </form>
+  </div>
+</body>
 </html>
 
 
