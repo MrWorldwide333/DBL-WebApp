@@ -38,7 +38,7 @@ app = Flask(__name__)
 app.secret_key="DVISUALS"
 
 @app.route("/")
-@app.route("/home")
+@app.route("/home", methods=["POST", "GET"])
 def home():
     CurrentFile="No file has been selected yet, so the example dataset will be used"
     if "file_name" in session: 
